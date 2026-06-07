@@ -1,0 +1,85 @@
+<UserControl x:Class="DebtManager.Desktop.Views.PartiesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{DynamicResource App.BackgroundBrush}">
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,16">
+            <TextBlock Text="Parties (Vendors &amp; Customers)" FontSize="22" FontWeight="Bold"
+                       Foreground="{DynamicResource App.TextPrimaryBrush}"/>
+            <TextBlock Text="Manage your vendors and customers" FontSize="13"
+                       Foreground="{DynamicResource App.TextSecondaryBrush}" Margin="0,4,0,0"/>
+        </StackPanel>
+
+        <!-- Create Form -->
+        <Border Grid.Row="1" Background="{DynamicResource App.SurfaceBrush}" CornerRadius="12" Padding="16" Margin="0,0,0,16">
+            <StackPanel>
+                <TextBlock Text="New Party" FontSize="14" FontWeight="SemiBold"
+                           Foreground="{DynamicResource App.TextPrimaryBrush}" Margin="0,0,0,8"/>
+                <WrapPanel>
+                    <TextBox Text="{Binding NewName, UpdateSourceTrigger=PropertyChanged}" Width="200" Margin="0,0,8,8"
+                             Tag="Name" Style="{DynamicResource {x:Type TextBox}}"/>
+                    <ComboBox SelectedItem="{Binding NewKind}" Width="120" Margin="0,0,8,8">
+                        <ComboBoxItem Content="Vendor"/>
+                        <ComboBoxItem Content="Customer"/>
+                        <ComboBoxItem Content="Both"/>
+                    </ComboBox>
+                    <TextBox Text="{Binding NewCurrency, UpdateSourceTrigger=PropertyChanged}" Width="80" Margin="0,0,8,8"
+                             Tag="Currency"/>
+                    <Button Content="Create" Command="{Binding CreatePartyCommand}" Style="{DynamicResource PrimaryButton}"
+                            Padding="16,8" Margin="0,0,0,8"/>
+                </WrapPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- List -->
+        <Border Grid.Row="2" Background="{DynamicResource App.SurfaceBrush}" CornerRadius="12" Padding="16">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <WrapPanel Grid.Row="0" Margin="0,0,0,8">
+                    <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" Width="200" Margin="0,0,8,0"
+                             Tag="Search..."/>
+                    <CheckBox Content="Include Archived" IsChecked="{Binding IncludeArchived}" VerticalAlignment="Center" Margin="8,0"/>
+                <Button Content="Refresh" Command="{Binding RefreshCommand}" Margin="8,0"/>
+                <Button Content="Export CSV" Command="{Binding ExportCsvCommand}" Margin="8,0"/>
+                <TextBlock Text="Tag:" Foreground="{DynamicResource App.TextSecondaryBrush}"
+                           VerticalAlignment="Center" Margin="16,0,6,0" FontSize="12"/>
+                <ComboBox ItemsSource="{Binding TagSuggestions}"
+                          SelectedItem="{Binding SelectedTagFilter}"
+                          Width="130" FontSize="12" Padding="6,4"
+                          Background="{DynamicResource App.InputBackgroundBrush}"
+                          Foreground="{DynamicResource App.InputForegroundBrush}"/>
+                </WrapPanel>
+
+                <DataGrid Grid.Row="1" ItemsSource="{Binding Parties}" SelectedItem="{Binding SelectedParty}"
+                          AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False"
+                          Background="Transparent" BorderThickness="0"
+                          Foreground="{DynamicResource App.TextPrimaryBrush}"
+                          GridLinesVisibility="Horizontal"
+                          HorizontalGridLinesBrush="{DynamicResource App.BorderBrush}">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
+                        <DataGridTextColumn Header="Kind" Binding="{Binding Kind}" Width="100"/>
+                        <DataGridTextColumn Header="Currency" Binding="{Binding DefaultCurrencyCode}" Width="80"/>
+                        <DataGridTextColumn Header="Archived" Binding="{Binding IsArchived}" Width="80"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
+                    <Button Content="Archive Selected" Command="{Binding ArchivePartyCommand}" Margin="0,0,8,0"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

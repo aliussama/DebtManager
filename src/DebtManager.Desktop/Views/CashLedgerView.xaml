@@ -1,0 +1,338 @@
+<UserControl x:Class="DebtManager.Desktop.Views.CashLedgerView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:DebtManager.Desktop.Controls"
+             Background="{DynamicResource App.BackgroundBrush}">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+    </UserControl.Resources>
+
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <DockPanel Grid.Row="0" Margin="0,0,0,16">
+            <StackPanel DockPanel.Dock="Left">
+                <TextBlock Text="Cash Ledger" FontSize="28" FontWeight="Bold"
+                           Foreground="{DynamicResource App.TextPrimaryBrush}"/>
+                <TextBlock Text="Track all income, expenses, and transfers"
+                           FontSize="14" Foreground="{DynamicResource App.TextSecondaryBrush}" Margin="0,4,0,0"/>
+            </StackPanel>
+            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
+                <Button Command="{Binding StartSplitExpenseCommand}" Padding="12,8" Margin="0,0,8,0"
+                        Background="{DynamicResource App.DangerBrush}" Foreground="White">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE8B0;" FontFamily="Segoe MDL2 Assets" FontSize="12" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Split Expense" FontSize="12"/>
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding StartSplitIncomeCommand}" Padding="12,8" Margin="0,0,8,0"
+                        Background="{DynamicResource App.SuccessBrush}" Foreground="White">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE8B0;" FontFamily="Segoe MDL2 Assets" FontSize="12" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Split Income" FontSize="12"/>
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding ManageIncomeSourcesCommand}" Padding="12,8" Margin="0,0,8,0"
+                        ToolTip="Define and manage income sources">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE946;" FontFamily="Segoe MDL2 Assets" FontSize="12" Margin="0,0,6,0" VerticalAlignment="Center" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                        <TextBlock Text="Manage Sources" FontSize="12"/>
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding RefreshCommand}" Padding="12,8" Margin="0,0,8,0">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE72C;" FontFamily="Segoe MDL2 Assets" FontSize="12" Margin="0,0,6,0" VerticalAlignment="Center"
+                                   Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                        <TextBlock Text="Refresh" FontSize="12"/>
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding ExportCsvCommand}" Padding="12,8">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xEDE1;" FontFamily="Segoe MDL2 Assets" FontSize="12" Margin="0,0,6,0" VerticalAlignment="Center"
+                                   Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                        <TextBlock Text="Export CSV" FontSize="12"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </DockPanel>
+
+        <!-- Summary Cards -->
+        <Grid Grid.Row="1" Margin="0,0,0,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="12"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="12"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Background="{DynamicResource App.SurfaceBrush}" CornerRadius="10" Padding="16">
+                <StackPanel>
+                    <TextBlock Text="TOTAL INCOME" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource App.TextMutedBrush}"/>
+                    <TextBlock Text="{Binding TotalIncome, StringFormat=N2}" FontSize="22" FontWeight="Bold"
+                               Foreground="{DynamicResource App.SuccessBrush}" Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Column="2" Background="{DynamicResource App.SurfaceBrush}" CornerRadius="10" Padding="16">
+                <StackPanel>
+                    <TextBlock Text="TOTAL EXPENSE" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource App.TextMutedBrush}"/>
+                    <TextBlock Text="{Binding TotalExpense, StringFormat=N2}" FontSize="22" FontWeight="Bold"
+                               Foreground="{DynamicResource App.DangerBrush}" Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Column="4" Background="{DynamicResource App.SurfaceBrush}" CornerRadius="10" Padding="16">
+                <StackPanel>
+                    <TextBlock Text="NET CASHFLOW" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource App.TextMutedBrush}"/>
+                    <TextBlock Text="{Binding NetCashflow, StringFormat=N2}" FontSize="22" FontWeight="Bold"
+                               Foreground="{DynamicResource App.AccentBrush}" Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- Filters -->
+        <Border Grid.Row="2" Background="{DynamicResource App.SurfaceBrush}" CornerRadius="10" Padding="12" Margin="0,0,0,12">
+
+
+            <StackPanel Orientation="Horizontal">
+                <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                         Width="200"
+                         Background="{DynamicResource App.InputBackgroundBrush}"
+                         Foreground="{DynamicResource App.InputForegroundBrush}"
+                         BorderBrush="{DynamicResource App.InputBorderBrush}"
+                         Padding="10,7" FontSize="13" Margin="0,0,12,0">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox">
+                            <Setter Property="Tag" Value="Search ledger..."/>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+
+                <TextBlock Text="Account:" FontSize="12" VerticalAlignment="Center"
+                           Foreground="{DynamicResource App.TextSecondaryBrush}" Margin="0,0,6,0"/>
+                <ComboBox ItemsSource="{Binding AccountFilterOptions}" SelectedItem="{Binding SelectedAccountFilter}"
+                          Background="{DynamicResource App.InputBackgroundBrush}"
+                          Foreground="{DynamicResource App.InputForegroundBrush}"
+                          Padding="8,6" FontSize="12" Width="140" Margin="0,0,12,0"/>
+
+                <TextBlock Text="From:" FontSize="12" VerticalAlignment="Center"
+                           Foreground="{DynamicResource App.TextSecondaryBrush}" Margin="0,0,6,0"/>
+                <DatePicker SelectedDate="{Binding FilterFromDate}" Width="130"
+                            FontSize="12" Margin="0,0,12,0"/>
+
+                <TextBlock Text="To:" FontSize="12" VerticalAlignment="Center"
+                           Foreground="{DynamicResource App.TextSecondaryBrush}" Margin="0,0,6,0"/>
+                <DatePicker SelectedDate="{Binding FilterToDate}" Width="130"
+                            FontSize="12" Margin="0,0,12,0"/>
+
+                <CheckBox IsChecked="{Binding IncludeTransfers}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                <TextBlock Text="Transfers" FontSize="12" VerticalAlignment="Center"
+                           Foreground="{DynamicResource App.TextSecondaryBrush}" Margin="0,0,12,0"/>
+
+                <Button Content="Clear" Command="{Binding ClearFiltersCommand}" Padding="10,5" FontSize="11"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Split Expense / Split Income Editor Panels -->
+        <StackPanel Grid.Row="3" Margin="0,0,0,12">
+            <!-- Split Expense Panel -->
+            <Border Background="{DynamicResource App.SurfaceBrush}" CornerRadius="12" Padding="20" Margin="0,0,0,8"
+                    Visibility="{Binding IsSplitExpenseMode, Converter={StaticResource BoolToVis}}">
+                <StackPanel>
+                    <TextBlock Text="Split Expense" FontSize="16" FontWeight="SemiBold"
+                               Foreground="{DynamicResource App.TextPrimaryBrush}" Margin="0,0,0,8"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                        <TextBlock Text="DATE" FontSize="11" Foreground="{DynamicResource App.TextSecondaryBrush}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <DatePicker SelectedDate="{Binding SplitExpenseDate}" Width="140" FontSize="12" Margin="0,0,16,0"/>
+                        <TextBlock Text="CURRENCY" FontSize="11" Foreground="{DynamicResource App.TextSecondaryBrush}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <ComboBox Width="80" SelectedItem="{Binding SplitExpenseCurrency}" FontSize="12">
+                            <ComboBoxItem Content="EGP"/><ComboBoxItem Content="USD"/><ComboBoxItem Content="EUR"/>
+                        </ComboBox>
+                    </StackPanel>
+                    <ItemsControl ItemsSource="{Binding SplitExpenseLines}" Margin="0,0,0,8">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                    <ComboBox ItemsSource="{Binding DataContext.AvailableCategories, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                              Text="{Binding Category, UpdateSourceTrigger=PropertyChanged}"
+                                              IsEditable="True" Width="160" Padding="8,6" FontSize="12" Margin="0,0,8,0"/>
+                                    <TextBox Text="{Binding Amount, UpdateSourceTrigger=PropertyChanged}"
+                                             Width="100" Padding="8,6" FontSize="12" Margin="0,0,8,0"
+                                             Background="{DynamicResource App.InputBackgroundBrush}"
+                                             Foreground="{DynamicResource App.InputForegroundBrush}"
+                                             BorderBrush="{DynamicResource App.InputBorderBrush}"/>
+                                    <TextBox Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}"
+                                             Width="180" Padding="8,6" FontSize="12" Margin="0,0,8,0"
+                                             Background="{DynamicResource App.InputBackgroundBrush}"
+                                             Foreground="{DynamicResource App.InputForegroundBrush}"
+                                             BorderBrush="{DynamicResource App.InputBorderBrush}"/>
+                                    <Button Content="&#xE74D;" FontFamily="Segoe MDL2 Assets" FontSize="11" Padding="6,4"
+                                            Command="{Binding DataContext.RemoveSplitExpenseLineCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                            CommandParameter="{Binding}" ToolTip="Remove line"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                        <Button Content="+ Add Line" Command="{Binding AddSplitExpenseLineCommand}" Padding="10,5" FontSize="11" Margin="0,0,16,0"/>
+                        <TextBlock FontSize="13" VerticalAlignment="Center" Foreground="{DynamicResource App.TextSecondaryBrush}">
+                            <Run Text="Total: "/><Run Text="{Binding SplitExpenseTotal, Mode=OneWay, StringFormat=N2}" FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource App.TextPrimaryBrush}"/>
+                        </TextBlock>
+                    </StackPanel>
+                    <TextBox Text="{Binding SplitExpenseNotes, UpdateSourceTrigger=PropertyChanged}"
+                             Width="400" HorizontalAlignment="Left" Padding="8,6" FontSize="12" Margin="0,0,0,8"
+                             Background="{DynamicResource App.InputBackgroundBrush}"
+                             Foreground="{DynamicResource App.InputForegroundBrush}"
+                             BorderBrush="{DynamicResource App.InputBorderBrush}">
+                        <TextBox.Style>
+                            <Style TargetType="TextBox"><Setter Property="Tag" Value="Notes (optional)"/></Style>
+                        </TextBox.Style>
+                    </TextBox>
+                    <TextBlock Text="{Binding SplitExpenseError}" FontSize="12" Foreground="{DynamicResource App.DangerBrush}" Margin="0,0,0,4"
+                               Visibility="{Binding SplitExpenseError, Converter={StaticResource NullToCollapsed}}"/>
+                    <StackPanel Orientation="Horizontal">
+                        <Button Content="Submit Split Expense" Command="{Binding SubmitSplitExpenseCommand}" Padding="14,8"
+                                Background="{DynamicResource App.AccentBrush}" Foreground="White" FontSize="12" Margin="0,0,8,0"/>
+                        <Button Content="Cancel" Command="{Binding CancelSplitExpenseCommand}" Padding="14,8" FontSize="12"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Split Income Panel -->
+            <Border Background="{DynamicResource App.SurfaceBrush}" CornerRadius="12" Padding="20" Margin="0,0,0,8"
+                    Visibility="{Binding IsSplitIncomeMode, Converter={StaticResource BoolToVis}}">
+                <StackPanel>
+                    <TextBlock Text="Split Income" FontSize="16" FontWeight="SemiBold"
+                               Foreground="{DynamicResource App.TextPrimaryBrush}" Margin="0,0,0,8"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                        <TextBlock Text="DATE" FontSize="11" Foreground="{DynamicResource App.TextSecondaryBrush}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <DatePicker SelectedDate="{Binding SplitIncomeDate}" Width="140" FontSize="12" Margin="0,0,16,0"/>
+                        <TextBlock Text="CURRENCY" FontSize="11" Foreground="{DynamicResource App.TextSecondaryBrush}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <ComboBox Width="80" SelectedItem="{Binding SplitIncomeCurrency}" FontSize="12">
+                            <ComboBoxItem Content="EGP"/><ComboBoxItem Content="USD"/><ComboBoxItem Content="EUR"/>
+                        </ComboBox>
+                    </StackPanel>
+                    <ItemsControl ItemsSource="{Binding SplitIncomeLines}" Margin="0,0,0,8">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                    <TextBox Text="{Binding Source, UpdateSourceTrigger=PropertyChanged}"
+                                             Width="160" Padding="8,6" FontSize="12" Margin="0,0,8,0"
+                                             Background="{DynamicResource App.InputBackgroundBrush}"
+                                             Foreground="{DynamicResource App.InputForegroundBrush}"
+                                             BorderBrush="{DynamicResource App.InputBorderBrush}"/>
+                                    <TextBox Text="{Binding Amount, UpdateSourceTrigger=PropertyChanged}"
+                                             Width="100" Padding="8,6" FontSize="12" Margin="0,0,8,0"
+                                             Background="{DynamicResource App.InputBackgroundBrush}"
+                                             Foreground="{DynamicResource App.InputForegroundBrush}"
+                                             BorderBrush="{DynamicResource App.InputBorderBrush}"/>
+                                    <Button Content="&#xE74D;" FontFamily="Segoe MDL2 Assets" FontSize="11" Padding="6,4"
+                                            Command="{Binding DataContext.RemoveSplitIncomeLineCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                            CommandParameter="{Binding}" ToolTip="Remove line"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                        <Button Content="+ Add Line" Command="{Binding AddSplitIncomeLineCommand}" Padding="10,5" FontSize="11" Margin="0,0,16,0"/>
+                        <TextBlock FontSize="13" VerticalAlignment="Center" Foreground="{DynamicResource App.TextSecondaryBrush}">
+                            <Run Text="Total: "/><Run Text="{Binding SplitIncomeTotal, Mode=OneWay, StringFormat=N2}" FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource App.TextPrimaryBrush}"/>
+                        </TextBlock>
+                    </StackPanel>
+                    <TextBox Text="{Binding SplitIncomeNotes, UpdateSourceTrigger=PropertyChanged}"
+                             Width="400" HorizontalAlignment="Left" Padding="8,6" FontSize="12" Margin="0,0,0,8"
+                             Background="{DynamicResource App.InputBackgroundBrush}"
+                             Foreground="{DynamicResource App.InputForegroundBrush}"
+                             BorderBrush="{DynamicResource App.InputBorderBrush}">
+                        <TextBox.Style>
+                            <Style TargetType="TextBox"><Setter Property="Tag" Value="Notes (optional)"/></Style>
+                        </TextBox.Style>
+                    </TextBox>
+                    <TextBlock Text="{Binding SplitIncomeError}" FontSize="12" Foreground="{DynamicResource App.DangerBrush}" Margin="0,0,0,4"
+                               Visibility="{Binding SplitIncomeError, Converter={StaticResource NullToCollapsed}}"/>
+                    <StackPanel Orientation="Horizontal">
+                        <Button Content="Submit Split Income" Command="{Binding SubmitSplitIncomeCommand}" Padding="14,8"
+                                Background="{DynamicResource App.AccentBrush}" Foreground="White" FontSize="12" Margin="0,0,8,0"/>
+                        <Button Content="Cancel" Command="{Binding CancelSplitIncomeCommand}" Padding="14,8" FontSize="12"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+
+        <!-- DataGrid -->
+        <DataGrid Grid.Row="4" ItemsSource="{Binding RowsView}" AutoGenerateColumns="False"
+                  IsReadOnly="True" SelectedItem="{Binding SelectedRow}"
+                  Background="{DynamicResource App.SurfaceBrush}"
+                  Foreground="{DynamicResource App.TextPrimaryBrush}"
+                  RowBackground="{DynamicResource App.SurfaceBrush}"
+                  AlternatingRowBackground="{DynamicResource App.SurfaceAltBrush}"
+                  BorderBrush="{DynamicResource App.BorderBrush}"
+                  GridLinesVisibility="Horizontal"
+                  HorizontalGridLinesBrush="{DynamicResource App.BorderBrush}"
+                  HeadersVisibility="Column"
+                  SelectionMode="Single"
+                  CanUserSortColumns="True"
+                  CanUserResizeColumns="True"
+                  FontSize="13">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Date" Binding="{Binding EffectiveDate, StringFormat=yyyy-MM-dd}" Width="100"/>
+                <DataGridTextColumn Header="Account" Binding="{Binding AccountName}" Width="140"/>
+                <DataGridTextColumn Header="Direction" Binding="{Binding Direction}" Width="80"/>
+                <DataGridTextColumn Header="Amount" Binding="{Binding Amount, StringFormat=N2}" Width="110">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="HorizontalAlignment" Value="Right"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="Currency" Binding="{Binding CurrencyCode}" Width="70"/>
+                <DataGridTextColumn Header="Category" Binding="{Binding Category}" Width="120"/>
+                <DataGridTextColumn Header="Reference" Binding="{Binding Reference}" Width="150"/>
+                <DataGridTextColumn Header="Related" Binding="{Binding RelatedAccountName}" Width="120"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- Detail Panel -->
+        <Border Grid.Row="5" Background="{DynamicResource App.SurfaceBrush}" CornerRadius="8" Padding="12" Margin="0,8,0,0"
+                Visibility="{Binding SelectedRow, Converter={StaticResource NullToCollapsed}}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock FontSize="12" Foreground="{DynamicResource App.TextSecondaryBrush}">
+                    <Run Text="Notes: "/>
+                    <Run Text="{Binding SelectedRow.Notes, Mode=OneWay}" Foreground="{DynamicResource App.TextPrimaryBrush}"/>
+                </TextBlock>
+                <TextBlock FontSize="12" Foreground="{DynamicResource App.TextSecondaryBrush}" Margin="24,0,0,0">
+                    <Run Text="Event: "/>
+                    <Run Text="{Binding SelectedRow.EventId, Mode=OneWay}" Foreground="{DynamicResource App.TextMutedBrush}"/>
+                </TextBlock>
+                <TextBlock FontSize="12" Foreground="{DynamicResource App.TextSecondaryBrush}" Margin="24,0,0,0">
+                    <Run Text="Correlation: "/>
+                    <Run Text="{Binding SelectedRow.CorrelationId, Mode=OneWay}" Foreground="{DynamicResource App.TextMutedBrush}"/>
+                </TextBlock>
+            </StackPanel>
+        </Border>
+
+        <!-- Empty State -->
+        <controls:EmptyStateControl Grid.Row="4"
+                                    Visibility="{Binding IsEmpty, Converter={StaticResource BoolToVis}}"
+                                    Title="No Transactions"
+                                    Message="Record income or expenses to see them here."
+                                    IconText="&#xE8C7;"
+                                    IsActionVisible="False"/>
+
+        <!-- Loading -->
+        <ProgressBar Grid.Row="4" IsIndeterminate="True" Height="3" VerticalAlignment="Top"
+                     Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}"/>
+    </Grid>
+</UserControl>

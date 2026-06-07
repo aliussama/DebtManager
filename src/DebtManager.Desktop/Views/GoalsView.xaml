@@ -1,0 +1,155 @@
+<UserControl x:Class="DebtManager.Desktop.Views.GoalsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="700" d:DesignWidth="900"
+             Background="{DynamicResource App.BackgroundBrush}">
+
+    <Grid Margin="24,20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,16">
+            <TextBlock Text="Financial Goals"
+                       FontSize="22" FontWeight="Bold"
+                       Foreground="{DynamicResource App.TextPrimaryBrush}"/>
+            <TextBlock Text="Track savings goals, contributions, and progress toward financial targets."
+                       FontSize="13" Foreground="{DynamicResource App.TextSecondaryBrush}" Margin="0,4,0,0"/>
+        </StackPanel>
+
+        <!-- Summary Cards -->
+        <WrapPanel Grid.Row="1" Margin="0,0,0,12">
+            <Border Background="{DynamicResource App.SurfaceBrush}" CornerRadius="8" Padding="16,12" Margin="0,0,12,0" MinWidth="140">
+                <StackPanel>
+                    <TextBlock Text="Total Target" FontSize="11" Foreground="{DynamicResource App.TextMutedBrush}"/>
+                    <TextBlock Text="{Binding TotalTarget, StringFormat={}{0:N2}}" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource App.TextPrimaryBrush}"/>
+                </StackPanel>
+            </Border>
+            <Border Background="{DynamicResource App.SurfaceBrush}" CornerRadius="8" Padding="16,12" Margin="0,0,12,0" MinWidth="140">
+                <StackPanel>
+                    <TextBlock Text="Contributed" FontSize="11" Foreground="{DynamicResource App.TextMutedBrush}"/>
+                    <TextBlock Text="{Binding TotalContributed, StringFormat={}{0:N2}}" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource App.SuccessBrush}"/>
+                </StackPanel>
+            </Border>
+            <Border Background="{DynamicResource App.SurfaceBrush}" CornerRadius="8" Padding="16,12" Margin="0,0,12,0" MinWidth="140">
+                <StackPanel>
+                    <TextBlock Text="Overall Progress" FontSize="11" Foreground="{DynamicResource App.TextMutedBrush}"/>
+                    <TextBlock Text="{Binding OverallProgress, StringFormat={}{0:F1}%}" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource App.AccentBrush}"/>
+                </StackPanel>
+            </Border>
+        </WrapPanel>
+
+        <!-- Create Goal + Record Contribution Forms -->
+        <Border Grid.Row="2" Background="{DynamicResource App.SurfaceBrush}" CornerRadius="8" Padding="16" Margin="0,0,0,12">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Create Goal -->
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="New Goal" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource App.TextPrimaryBrush}" Margin="0,0,0,8"/>
+                    <WrapPanel>
+                        <StackPanel Margin="0,0,8,4">
+                            <TextBlock Text="Name" FontSize="11" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                            <TextBox Text="{Binding NewGoalName, UpdateSourceTrigger=PropertyChanged}" Width="120"/>
+                        </StackPanel>
+                        <StackPanel Margin="0,0,8,4">
+                            <TextBlock Text="Type" FontSize="11" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                            <TextBox Text="{Binding NewGoalType, UpdateSourceTrigger=PropertyChanged}" Width="100"/>
+                        </StackPanel>
+                        <StackPanel Margin="0,0,8,4">
+                            <TextBlock Text="Target" FontSize="11" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                            <TextBox Text="{Binding NewGoalTarget, UpdateSourceTrigger=PropertyChanged}" Width="80"/>
+                        </StackPanel>
+                        <StackPanel Margin="0,0,8,4">
+                            <TextBlock Text="Currency" FontSize="11" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                            <TextBox Text="{Binding NewGoalCurrency, UpdateSourceTrigger=PropertyChanged}" Width="50"/>
+                        </StackPanel>
+                        <Button Content="Create" Command="{Binding CreateGoalCommand}" Style="{StaticResource PrimaryButton}" Padding="12,6" Margin="0,12,0,0"/>
+                    </WrapPanel>
+                </StackPanel>
+
+                <Border Grid.Column="1" Width="1" Background="{DynamicResource App.BorderBrush}" Margin="12,0"/>
+
+                <!-- Record Contribution -->
+                <StackPanel Grid.Column="2">
+                    <TextBlock Text="Record Contribution" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource App.TextPrimaryBrush}" Margin="0,0,0,8"/>
+                    <WrapPanel>
+                        <StackPanel Margin="0,0,8,4">
+                            <TextBlock Text="Account" FontSize="11" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                            <ComboBox ItemsSource="{Binding Accounts}" SelectedItem="{Binding SelectedAccount}"
+                                      DisplayMemberPath="Name" Width="120"/>
+                        </StackPanel>
+                        <StackPanel Margin="0,0,8,4">
+                            <TextBlock Text="Amount" FontSize="11" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                            <TextBox Text="{Binding ContributionAmount, UpdateSourceTrigger=PropertyChanged}" Width="80"/>
+                        </StackPanel>
+                        <StackPanel Margin="0,0,8,4">
+                            <TextBlock Text="Ref" FontSize="11" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                            <TextBox Text="{Binding ContributionReference, UpdateSourceTrigger=PropertyChanged}" Width="80"/>
+                        </StackPanel>
+                        <Button Content="Contribute" Command="{Binding RecordContributionCommand}" Style="{StaticResource SuccessButton}" Padding="12,6" Margin="0,12,0,0"/>
+                    </WrapPanel>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Goals Grid + Toolbar -->
+        <Grid Grid.Row="3">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,8">
+                <CheckBox Content="Include Archived" IsChecked="{Binding IncludeArchived}" VerticalAlignment="Center" Margin="0,0,16,0"/>
+                <Button Content="Archive Selected" Command="{Binding ArchiveGoalCommand}" Padding="10,4" Margin="0,0,8,0"/>
+                <Button Content="Export CSV" Command="{Binding ExportCsvCommand}" Padding="10,4"/>
+                <TextBlock Text="Tag:" Foreground="{DynamicResource App.TextSecondaryBrush}"
+                           VerticalAlignment="Center" Margin="16,0,6,0" FontSize="12"/>
+                <ComboBox ItemsSource="{Binding TagSuggestions}"
+                          SelectedItem="{Binding SelectedTagFilter}"
+                          Width="130" FontSize="12" Padding="6,4"
+                          Background="{DynamicResource App.InputBackgroundBrush}"
+                          Foreground="{DynamicResource App.InputForegroundBrush}"/>
+            </StackPanel>
+
+            <DataGrid Grid.Row="1" ItemsSource="{Binding Goals}" SelectedItem="{Binding SelectedGoal}"
+                      AutoGenerateColumns="False" IsReadOnly="True"
+                      CanUserAddRows="False" CanUserDeleteRows="False"
+                      HeadersVisibility="Column" GridLinesVisibility="Horizontal"
+                      Background="{DynamicResource App.SurfaceBrush}"
+                      Foreground="{DynamicResource App.TextPrimaryBrush}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
+                    <DataGridTextColumn Header="Type" Binding="{Binding GoalType}" Width="100"/>
+                    <DataGridTextColumn Header="Target" Binding="{Binding TargetAmount, StringFormat={}{0:N2}}" Width="90"/>
+                    <DataGridTextColumn Header="CCY" Binding="{Binding CurrencyCode}" Width="50"/>
+                    <DataGridTextColumn Header="Target Date" Binding="{Binding TargetDate, StringFormat={}{0:yyyy-MM-dd}}" Width="90"/>
+                    <DataGridTextColumn Header="Contributed" Binding="{Binding Contributed, StringFormat={}{0:N2}}" Width="90"/>
+                    <DataGridTextColumn Header="Remaining" Binding="{Binding Remaining, StringFormat={}{0:N2}}" Width="90"/>
+                    <DataGridTextColumn Header="Progress" Binding="{Binding ProgressPercent, StringFormat={}{0:F1}%}" Width="70"/>
+                    <DataGridTextColumn Header="ETA" Binding="{Binding EstimatedCompletionDate, StringFormat={}{0:yyyy-MM-dd}}" Width="90"/>
+                    <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="70"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+
+        <!-- Loading Overlay -->
+        <Border Grid.RowSpan="4" Background="{DynamicResource App.HeavyOverlayBrush}"
+                Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibility}}">
+            <ProgressBar IsIndeterminate="True" Width="200" Height="4"
+                         VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        </Border>
+    </Grid>
+</UserControl>

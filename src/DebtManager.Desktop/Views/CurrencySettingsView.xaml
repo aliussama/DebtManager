@@ -1,0 +1,168 @@
+<UserControl x:Class="DebtManager.Desktop.Views.CurrencySettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="600" d:DesignWidth="800"
+             Background="{DynamicResource App.BackgroundBrush}">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="24">
+            <!-- Header -->
+            <StackPanel Margin="0,0,0,24">
+                <TextBlock Text="Currency &amp; FX Settings"
+                           FontSize="24"
+                           FontWeight="Bold"
+                           Foreground="{DynamicResource App.TextPrimaryBrush}"/>
+                <TextBlock Text="Configure your reporting currency and FX valuation policy"
+                           FontSize="13"
+                           Foreground="{DynamicResource App.TextSecondaryBrush}"
+                           Margin="0,4,0,0"/>
+            </StackPanel>
+
+            <!-- Reporting Currency Section -->
+            <Border Background="{DynamicResource App.SurfaceBrush}" CornerRadius="12" Padding="24" Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="Reporting Currency"
+                               FontSize="16" FontWeight="SemiBold"
+                               Foreground="{DynamicResource App.TextPrimaryBrush}"
+                               Margin="0,0,0,12"/>
+
+                    <TextBlock Text="All reports will convert amounts to this currency."
+                               FontSize="12"
+                               Foreground="{DynamicResource App.TextSecondaryBrush}"
+                               Margin="0,0,0,12"/>
+
+                    <StackPanel Orientation="Horizontal">
+                        <ComboBox ItemsSource="{Binding AvailableCurrencies}"
+                                  Text="{Binding ReportingCurrencyCode, UpdateSourceTrigger=PropertyChanged}"
+                                  IsEditable="True"
+                                  Width="200"
+                                  Background="{DynamicResource App.InputBackgroundBrush}"
+                                  Foreground="{DynamicResource App.InputForegroundBrush}"
+                                  BorderBrush="{DynamicResource App.InputBorderBrush}"
+                                  Padding="12,10"
+                                  FontSize="14"/>
+
+                        <Button Command="{Binding SaveCurrencyCommand}"
+                                Content="Save Currency"
+                                Background="{DynamicResource App.AccentBrush}"
+                                Foreground="White"
+                                BorderThickness="0"
+                                Padding="24,10"
+                                FontSize="14"
+                                FontWeight="SemiBold"
+                                Cursor="Hand"
+                                Margin="12,0,0,0"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- FX Policy Section -->
+            <Border Background="{DynamicResource App.SurfaceBrush}" CornerRadius="12" Padding="24" Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="FX Valuation Policy"
+                               FontSize="16" FontWeight="SemiBold"
+                               Foreground="{DynamicResource App.TextPrimaryBrush}"
+                               Margin="0,0,0,12"/>
+
+                    <TextBlock Text="Controls how FX rates are selected when converting between currencies."
+                               FontSize="12"
+                               Foreground="{DynamicResource App.TextSecondaryBrush}"
+                               TextWrapping="Wrap"
+                               Margin="0,0,0,12"/>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="24"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="POLICY"
+                                       FontSize="12" FontWeight="Medium"
+                                       Foreground="{DynamicResource App.TextSecondaryBrush}"
+                                       Margin="0,0,0,6"/>
+                            <ComboBox ItemsSource="{Binding AvailablePolicies}"
+                                      SelectedItem="{Binding SelectedPolicy}"
+                                      Background="{DynamicResource App.InputBackgroundBrush}"
+                                      Foreground="{DynamicResource App.InputForegroundBrush}"
+                                      BorderBrush="{DynamicResource App.InputBorderBrush}"
+                                      Padding="12,10"
+                                      FontSize="14"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="MAX AGE (DAYS)"
+                                       FontSize="12" FontWeight="Medium"
+                                       Foreground="{DynamicResource App.TextSecondaryBrush}"
+                                       Margin="0,0,0,6"/>
+                            <TextBox Text="{Binding MaxAgeDays, UpdateSourceTrigger=PropertyChanged}"
+                                     Background="{DynamicResource App.InputBackgroundBrush}"
+                                     Foreground="{DynamicResource App.InputForegroundBrush}"
+                                     BorderBrush="{DynamicResource App.InputBorderBrush}"
+                                     Padding="12,10"
+                                     FontSize="14"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <Button Command="{Binding SavePolicyCommand}"
+                            Content="Save Policy"
+                            Background="{DynamicResource App.AccentBrush}"
+                            Foreground="White"
+                            BorderThickness="0"
+                            Padding="24,10"
+                            FontSize="14"
+                            FontWeight="SemiBold"
+                            Cursor="Hand"
+                            HorizontalAlignment="Left"
+                            Margin="0,16,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Policy Description -->
+            <Border Background="{DynamicResource App.SurfaceBrush}" CornerRadius="12" Padding="24" Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="Policy Reference"
+                               FontSize="16" FontWeight="SemiBold"
+                               Foreground="{DynamicResource App.TextPrimaryBrush}"
+                               Margin="0,0,0,12"/>
+
+                    <TextBlock TextWrapping="Wrap" FontSize="12"
+                               Foreground="{DynamicResource App.TextSecondaryBrush}"
+                               LineHeight="20">
+                        <Run FontWeight="SemiBold">Spot:</Run>
+                        <Run>Requires an exact rate on the same date. Fails if missing.</Run>
+                        <LineBreak/>
+                        <Run FontWeight="SemiBold">NearestBefore:</Run>
+                        <Run>Uses the latest rate on or before the date (within MaxAgeDays).</Run>
+                        <LineBreak/>
+                        <Run FontWeight="SemiBold">NearestAfter:</Run>
+                        <Run>Uses the earliest rate on or after the date (within MaxAgeDays).</Run>
+                        <LineBreak/>
+                        <Run FontWeight="SemiBold">Nearest:</Run>
+                        <Run>Uses the closest rate by date. Ties break to before.</Run>
+                        <LineBreak/>
+                        <Run FontWeight="SemiBold">EodNearestBefore:</Run>
+                        <Run>Same as NearestBefore (end-of-day semantics).</Run>
+                        <LineBreak/>
+                        <Run FontWeight="SemiBold">InterpolateLinear:</Run>
+                        <Run>Linearly interpolates between before and after rates. Falls back to NearestBefore.</Run>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+
+            <!-- Status -->
+            <TextBlock Text="{Binding StatusMessage}"
+                       FontSize="12"
+                       Foreground="{DynamicResource App.TextSecondaryBrush}"
+                       Margin="0,0,0,8"/>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

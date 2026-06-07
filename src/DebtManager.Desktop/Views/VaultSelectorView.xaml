@@ -1,0 +1,105 @@
+<UserControl x:Class="DebtManager.Desktop.Views.VaultSelectorView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="500" d:DesignWidth="600"
+             Background="{DynamicResource App.BackgroundBrush}">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+    </UserControl.Resources>
+
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <DockPanel Grid.Row="0" Margin="0,0,0,20">
+            <StackPanel DockPanel.Dock="Left">
+                <TextBlock Text="Select Vault" FontSize="28" FontWeight="Bold"
+                           Foreground="{DynamicResource App.TextPrimaryBrush}"/>
+                <TextBlock Text="Each vault is fully isolated with its own data and encryption."
+                           FontSize="14" Foreground="{DynamicResource App.TextSecondaryBrush}" Margin="0,4,0,0"/>
+            </StackPanel>
+            <Button DockPanel.Dock="Right" Command="{Binding ShowCreateFormCommand}"
+                    Background="{DynamicResource App.AccentBrush}" Foreground="White"
+                    Padding="14,8" HorizontalAlignment="Right" VerticalAlignment="Top">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="&#xE710;" FontFamily="Segoe MDL2 Assets" FontSize="12" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                    <TextBlock Text="New Vault" FontSize="12"/>
+                </StackPanel>
+            </Button>
+        </DockPanel>
+
+        <!-- Create Vault Form -->
+        <Border Grid.Row="1" Background="{DynamicResource App.SurfaceBrush}" CornerRadius="12" Padding="20" Margin="0,0,0,16"
+                Visibility="{Binding IsCreateFormVisible, Converter={StaticResource BoolToVis}}">
+            <StackPanel>
+                <TextBlock Text="Create New Vault" FontSize="16" FontWeight="SemiBold"
+                           Foreground="{DynamicResource App.TextPrimaryBrush}" Margin="0,0,0,12"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="16"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="VAULT NAME" FontSize="11" Foreground="{DynamicResource App.TextSecondaryBrush}" Margin="0,0,0,4"/>
+                        <TextBox Text="{Binding NewVaultName, UpdateSourceTrigger=PropertyChanged}" Padding="10,8" FontSize="13"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="CURRENCY" FontSize="11" Foreground="{DynamicResource App.TextSecondaryBrush}" Margin="0,0,0,4"/>
+                        <ComboBox ItemsSource="{Binding CurrencyOptions}" SelectedItem="{Binding NewVaultCurrency}" Padding="10,8" FontSize="13" Width="90"/>
+                    </StackPanel>
+                </Grid>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+                    <Button Content="Cancel" Command="{Binding CancelCreateCommand}" Padding="16,8" Margin="0,0,8,0"/>
+                    <Button Content="Create" Command="{Binding CreateVaultCommand}"
+                            Background="{DynamicResource App.AccentBrush}" Foreground="White" Padding="16,8"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Vault List -->
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+            <ItemsControl ItemsSource="{Binding Vaults}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Background="{DynamicResource App.SurfaceBrush}" CornerRadius="10" Padding="16" Margin="0,0,0,8"
+                                Cursor="Hand">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding Name}" FontSize="16" FontWeight="SemiBold"
+                                               Foreground="{DynamicResource App.TextPrimaryBrush}"/>
+                                    <TextBlock FontSize="12" Foreground="{DynamicResource App.TextMutedBrush}" Margin="0,2,0,0">
+                                        <Run Text="{Binding CurrencyCode, Mode=OneWay}"/>
+                                        <Run Text=" &#x00B7; Created "/>
+                                        <Run Text="{Binding CreatedDate, Mode=OneWay}"/>
+                                    </TextBlock>
+                                </StackPanel>
+                                <Button Grid.Column="1" Content="Open" VerticalAlignment="Center"
+                                        Command="{Binding DataContext.OpenVaultCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                        CommandParameter="{Binding}"
+                                        Background="{DynamicResource App.AccentBrush}" Foreground="White"
+                                        Padding="14,8"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <!-- Loading -->
+        <ProgressBar Grid.Row="2" IsIndeterminate="True" Height="3" VerticalAlignment="Top"
+                     Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}"/>
+    </Grid>
+</UserControl>

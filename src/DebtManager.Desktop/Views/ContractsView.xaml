@@ -1,0 +1,80 @@
+<UserControl x:Class="DebtManager.Desktop.Views.ContractsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{DynamicResource App.BackgroundBrush}">
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Margin="0,0,0,16">
+            <TextBlock Text="Contracts" FontSize="22" FontWeight="Bold"
+                       Foreground="{DynamicResource App.TextPrimaryBrush}"/>
+            <TextBlock Text="Subscriptions, rent, insurance, and service contracts" FontSize="13"
+                       Foreground="{DynamicResource App.TextSecondaryBrush}" Margin="0,4,0,0"/>
+        </StackPanel>
+
+        <Border Grid.Row="1" Background="{DynamicResource App.SurfaceBrush}" CornerRadius="12" Padding="16" Margin="0,0,0,16">
+            <StackPanel>
+                <TextBlock Text="New Contract" FontSize="14" FontWeight="SemiBold"
+                           Foreground="{DynamicResource App.TextPrimaryBrush}" Margin="0,0,0,8"/>
+                <WrapPanel>
+                    <TextBox Text="{Binding NewTitle, UpdateSourceTrigger=PropertyChanged}" Width="200" Margin="0,0,8,8" Tag="Title"/>
+                    <ComboBox ItemsSource="{Binding Parties}" SelectedItem="{Binding SelectedParty}"
+                              DisplayMemberPath="Name" Width="180" Margin="0,0,8,8"/>
+                    <TextBox Text="{Binding NewBaseAmount, UpdateSourceTrigger=PropertyChanged}" Width="120" Margin="0,0,8,8" Tag="Amount"/>
+                    <TextBox Text="{Binding NewCurrency, UpdateSourceTrigger=PropertyChanged}" Width="80" Margin="0,0,8,8" Tag="Currency"/>
+                    <Button Content="Create" Command="{Binding CreateContractCommand}" Style="{DynamicResource PrimaryButton}"
+                            Padding="16,8" Margin="0,0,0,8"/>
+                </WrapPanel>
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Row="2" Background="{DynamicResource App.SurfaceBrush}" CornerRadius="12" Padding="16">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <WrapPanel Grid.Row="0" Margin="0,0,0,8">
+                    <CheckBox Content="Include Archived" IsChecked="{Binding IncludeArchived}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <Button Content="Refresh" Command="{Binding RefreshCommand}" Margin="8,0"/>
+                <Button Content="Export CSV" Command="{Binding ExportCsvCommand}" Margin="8,0"/>
+                <TextBlock Text="Tag:" Foreground="{DynamicResource App.TextSecondaryBrush}"
+                           VerticalAlignment="Center" Margin="16,0,6,0" FontSize="12"/>
+                <ComboBox ItemsSource="{Binding TagSuggestions}"
+                          SelectedItem="{Binding SelectedTagFilter}"
+                          Width="130" FontSize="12" Padding="6,4"
+                          Background="{DynamicResource App.InputBackgroundBrush}"
+                          Foreground="{DynamicResource App.InputForegroundBrush}"/>
+                </WrapPanel>
+
+                <DataGrid Grid.Row="1" ItemsSource="{Binding Contracts}" SelectedItem="{Binding SelectedContract}"
+                          AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False"
+                          Background="Transparent" BorderThickness="0"
+                          Foreground="{DynamicResource App.TextPrimaryBrush}"
+                          GridLinesVisibility="Horizontal"
+                          HorizontalGridLinesBrush="{DynamicResource App.BorderBrush}">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Title" Binding="{Binding Title}" Width="*"/>
+                        <DataGridTextColumn Header="Party" Binding="{Binding PartyName}" Width="150"/>
+                        <DataGridTextColumn Header="Type" Binding="{Binding ContractType}" Width="120"/>
+                        <DataGridTextColumn Header="Currency" Binding="{Binding CurrencyCode}" Width="80"/>
+                        <DataGridTextColumn Header="Start" Binding="{Binding StartDate, StringFormat=yyyy-MM-dd}" Width="100"/>
+                        <DataGridTextColumn Header="End" Binding="{Binding EndDate, StringFormat=yyyy-MM-dd}" Width="100"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
+                    <Button Content="Generate Bills" Command="{Binding GenerateBillsCommand}" Style="{DynamicResource PrimaryButton}"
+                            Padding="12,6" Margin="0,0,8,0"/>
+                    <Button Content="Archive" Command="{Binding ArchiveContractCommand}" Margin="0,0,8,0"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

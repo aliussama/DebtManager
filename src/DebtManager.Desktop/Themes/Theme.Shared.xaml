@@ -1,0 +1,62 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- 
+        Theme.Shared.xaml
+        Declares ALL brush keys used across the application.
+        Values here are defaults (Dark theme) and will be overridden 
+        by Theme.Dark.xaml or Theme.Light.xaml at runtime.
+    -->
+
+    <!-- Core surface colors -->
+    <SolidColorBrush x:Key="App.BackgroundBrush" Color="#0F0F10"/>
+    <SolidColorBrush x:Key="App.SurfaceBrush" Color="#17171A"/>
+    <SolidColorBrush x:Key="App.SurfaceAltBrush" Color="#1F1F23"/>
+    <SolidColorBrush x:Key="App.BorderBrush" Color="#2A2A2E"/>
+
+    <!-- Text colors -->
+    <SolidColorBrush x:Key="App.TextPrimaryBrush" Color="#EAEAEA"/>
+    <SolidColorBrush x:Key="App.TextSecondaryBrush" Color="#A0A0A5"/>
+    <SolidColorBrush x:Key="App.TextMutedBrush" Color="#6B7280"/>
+
+    <!-- Accent / brand -->
+    <SolidColorBrush x:Key="App.AccentBrush" Color="#3B82F6"/>
+    <SolidColorBrush x:Key="App.AccentHoverBrush" Color="#2563EB"/>
+    <SolidColorBrush x:Key="App.AccentPressedBrush" Color="#1D4ED8"/>
+
+    <!-- Semantic colors -->
+    <SolidColorBrush x:Key="App.DangerBrush" Color="#EF4444"/>
+    <SolidColorBrush x:Key="App.DangerHoverBrush" Color="#DC2626"/>
+    <SolidColorBrush x:Key="App.SuccessBrush" Color="#10B981"/>
+    <SolidColorBrush x:Key="App.SuccessHoverBrush" Color="#059669"/>
+    <SolidColorBrush x:Key="App.SuccessPressedBrush" Color="#047857"/>
+    <SolidColorBrush x:Key="App.WarningBrush" Color="#F59E0B"/>
+
+    <!-- Button colors -->
+    <SolidColorBrush x:Key="App.ButtonBrush" Color="#1F1F23"/>
+    <SolidColorBrush x:Key="App.ButtonHoverBrush" Color="#2A2A2E"/>
+    <SolidColorBrush x:Key="App.ButtonPressedBrush" Color="#333338"/>
+
+    <!-- DataGrid -->
+    <SolidColorBrush x:Key="App.GridHeaderBrush" Color="#1F1F23"/>
+    <SolidColorBrush x:Key="App.GridRowBrush" Color="#17171A"/>
+    <SolidColorBrush x:Key="App.GridAltRowBrush" Color="#1E1E22"/>
+    <SolidColorBrush x:Key="App.GridRowHoverBrush" Color="#252529"/>
+
+    <!-- Input controls -->
+    <SolidColorBrush x:Key="App.InputBackgroundBrush" Color="#0F0F10"/>
+    <SolidColorBrush x:Key="App.InputBorderBrush" Color="#2A2A2E"/>
+    <SolidColorBrush x:Key="App.InputForegroundBrush" Color="#EAEAEA"/>
+
+    <!-- Overlays -->
+    <SolidColorBrush x:Key="App.OverlayBrush" Color="#80000000"/>
+    <SolidColorBrush x:Key="App.HeavyOverlayBrush" Color="#C0000000"/>
+    <SolidColorBrush x:Key="App.OnboardingOverlayBrush" Color="#E6000000"/>
+
+    <!-- Contextual surfaces (used in detail panels, reversal confirmations etc.) -->
+    <SolidColorBrush x:Key="App.DangerSurfaceBrush" Color="#2D1F1F"/>
+    <SolidColorBrush x:Key="App.InfoSurfaceBrush" Color="#1A1A1E"/>
+    <SolidColorBrush x:Key="App.SuccessSurfaceBrush" Color="#1A2A1E"/>
+    <SolidColorBrush x:Key="App.AccentSurfaceBrush" Color="#1A2240"/>
+
+</ResourceDictionary>

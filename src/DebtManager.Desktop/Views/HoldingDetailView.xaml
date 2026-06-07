@@ -1,0 +1,123 @@
+<UserControl x:Class="DebtManager.Desktop.Views.HoldingDetailView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{DynamicResource App.BackgroundBrush}">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+    </UserControl.Resources>
+
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <DockPanel Grid.Row="0" Margin="0,0,0,20">
+            <StackPanel DockPanel.Dock="Left">
+                <TextBlock FontSize="28" FontWeight="Bold" Foreground="{DynamicResource App.TextPrimaryBrush}">
+                    <Run Text="Holding Detail - "/>
+                    <Run Text="{Binding Symbol}"/>
+                </TextBlock>
+                <TextBlock FontSize="14" Foreground="{DynamicResource App.TextSecondaryBrush}" Margin="0,4,0,0">
+                    <Run Text="Qty: "/><Run Text="{Binding Quantity, StringFormat=N4}"/>
+                    <Run Text="  |  Avg Cost: "/><Run Text="{Binding AvgCost, StringFormat=N4}"/>
+                    <Run Text="  |  Total Cost: "/><Run Text="{Binding TotalCost, StringFormat=N2}"/>
+                </TextBlock>
+            </StackPanel>
+            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
+                <Button Command="{Binding RefreshCommand}" Padding="12,8" Margin="0,0,8,0">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE72C;" FontFamily="Segoe MDL2 Assets" FontSize="12" Margin="0,0,6,0" VerticalAlignment="Center"
+                                   Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                        <TextBlock Text="Refresh" FontSize="12"/>
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding ExportTransactionsCommand}" Padding="12,8" Margin="0,0,4,0" Content="Export Txns" FontSize="11"/>
+                <Button Command="{Binding ExportLotsCommand}" Padding="12,8" Margin="0,0,4,0" Content="Export Lots" FontSize="11"/>
+                <Button Command="{Binding ExportPnLCommand}" Padding="12,8" Content="Export P&amp;L" FontSize="11"/>
+            </StackPanel>
+        </DockPanel>
+
+        <!-- Lots section header -->
+        <TextBlock Grid.Row="1" Text="LOTS" FontSize="12" FontWeight="SemiBold"
+                   Foreground="{DynamicResource App.TextMutedBrush}" Margin="0,0,0,6"/>
+
+        <!-- Lots Grid -->
+        <DataGrid Grid.Row="2" ItemsSource="{Binding Lots}" AutoGenerateColumns="False"
+                  IsReadOnly="True" MaxHeight="200"
+                  Background="{DynamicResource App.SurfaceBrush}"
+                  Foreground="{DynamicResource App.TextPrimaryBrush}"
+                  BorderBrush="{DynamicResource App.BorderBrush}" BorderThickness="1"
+                  GridLinesVisibility="Horizontal"
+                  HorizontalGridLinesBrush="{DynamicResource App.BorderBrush}"
+                  RowBackground="{DynamicResource App.SurfaceBrush}"
+                  AlternatingRowBackground="{DynamicResource App.BackgroundBrush}"
+                  HeadersVisibility="Column" Margin="0,0,0,16">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Trade Date" Binding="{Binding TradeDate, StringFormat=yyyy-MM-dd}" Width="120"/>
+                <DataGridTextColumn Header="Remaining Qty" Binding="{Binding RemainingQuantity, StringFormat=N4}" Width="120"/>
+                <DataGridTextColumn Header="Cost/Unit" Binding="{Binding CostPerUnit, StringFormat=N4}" Width="120"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- Transactions section -->
+        <TextBlock Grid.Row="3" Text="TRANSACTIONS" FontSize="12" FontWeight="SemiBold"
+                   Foreground="{DynamicResource App.TextMutedBrush}" Margin="0,0,0,6"
+                   VerticalAlignment="Top"/>
+
+        <DataGrid Grid.Row="3" ItemsSource="{Binding Transactions}" AutoGenerateColumns="False"
+                  IsReadOnly="True" Margin="0,24,0,16"
+                  Background="{DynamicResource App.SurfaceBrush}"
+                  Foreground="{DynamicResource App.TextPrimaryBrush}"
+                  BorderBrush="{DynamicResource App.BorderBrush}" BorderThickness="1"
+                  GridLinesVisibility="Horizontal"
+                  HorizontalGridLinesBrush="{DynamicResource App.BorderBrush}"
+                  RowBackground="{DynamicResource App.SurfaceBrush}"
+                  AlternatingRowBackground="{DynamicResource App.BackgroundBrush}"
+                  HeadersVisibility="Column">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Type" Binding="{Binding TransactionType}" Width="100"/>
+                <DataGridTextColumn Header="Date" Binding="{Binding TradeDate, StringFormat=yyyy-MM-dd}" Width="100"/>
+                <DataGridTextColumn Header="Qty" Binding="{Binding Quantity, StringFormat=N4}" Width="100"/>
+                <DataGridTextColumn Header="Price" Binding="{Binding PricePerUnit, StringFormat=N4}" Width="100"/>
+                <DataGridTextColumn Header="Fees" Binding="{Binding Fees, StringFormat=N2}" Width="80"/>
+                <DataGridTextColumn Header="Taxes" Binding="{Binding Taxes, StringFormat=N2}" Width="80"/>
+                <DataGridTextColumn Header="Reversed" Binding="{Binding IsReversed}" Width="70"/>
+                <DataGridTextColumn Header="Notes" Binding="{Binding Notes}" Width="*"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- Realized P&L section -->
+        <TextBlock Grid.Row="4" Text="REALIZED P&amp;L" FontSize="12" FontWeight="SemiBold"
+                   Foreground="{DynamicResource App.TextMutedBrush}" Margin="0,0,0,6"/>
+
+        <DataGrid Grid.Row="5" ItemsSource="{Binding RealizedPnLEntries}" AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  Background="{DynamicResource App.SurfaceBrush}"
+                  Foreground="{DynamicResource App.TextPrimaryBrush}"
+                  BorderBrush="{DynamicResource App.BorderBrush}" BorderThickness="1"
+                  GridLinesVisibility="Horizontal"
+                  HorizontalGridLinesBrush="{DynamicResource App.BorderBrush}"
+                  RowBackground="{DynamicResource App.SurfaceBrush}"
+                  AlternatingRowBackground="{DynamicResource App.BackgroundBrush}"
+                  HeadersVisibility="Column">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Date" Binding="{Binding TradeDate, StringFormat=yyyy-MM-dd}" Width="100"/>
+                <DataGridTextColumn Header="Qty Sold" Binding="{Binding QuantitySold, StringFormat=N4}" Width="100"/>
+                <DataGridTextColumn Header="Proceeds" Binding="{Binding Proceeds, StringFormat=N2}" Width="120"/>
+                <DataGridTextColumn Header="Cost Basis" Binding="{Binding CostBasis, StringFormat=N2}" Width="120"/>
+                <DataGridTextColumn Header="Realized Gain" Binding="{Binding RealizedGain, StringFormat=N2}" Width="120"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- Loading -->
+        <ProgressBar Grid.Row="3" IsIndeterminate="True" Height="3" VerticalAlignment="Top"
+                     Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}"/>
+    </Grid>
+</UserControl>

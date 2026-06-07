@@ -1,0 +1,96 @@
+<UserControl x:Class="DebtManager.Desktop.Views.DocumentVaultView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="600" d:DesignWidth="900"
+             Background="{DynamicResource App.BackgroundBrush}">
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,16">
+            <TextBlock Text="Document Vault" FontSize="22" FontWeight="Bold"
+                       Foreground="{DynamicResource App.TextPrimaryBrush}"/>
+            <TextBlock Text="Manage receipts, invoices, statements, and attachments - encrypted at rest."
+                       FontSize="13" Foreground="{DynamicResource App.TextSecondaryBrush}" Margin="0,4,0,0"/>
+        </StackPanel>
+
+        <!-- Summary Cards -->
+        <Border Grid.Row="1" Background="{DynamicResource App.SurfaceBrush}" CornerRadius="10" Padding="16" Margin="0,0,0,12">
+            <StackPanel Orientation="Horizontal">
+                <StackPanel Margin="0,0,32,0">
+                    <TextBlock Text="Total" FontSize="11" Foreground="{DynamicResource App.TextMutedBrush}"/>
+                    <TextBlock Text="{Binding Summary.TotalDocs}" FontSize="20" FontWeight="Bold"
+                               Foreground="{DynamicResource App.TextPrimaryBrush}"/>
+                </StackPanel>
+                <StackPanel Margin="0,0,32,0">
+                    <TextBlock Text="Active" FontSize="11" Foreground="{DynamicResource App.TextMutedBrush}"/>
+                    <TextBlock Text="{Binding Summary.ActiveDocs}" FontSize="20" FontWeight="Bold"
+                               Foreground="{DynamicResource App.SuccessBrush}"/>
+                </StackPanel>
+                <StackPanel Margin="0,0,32,0">
+                    <TextBlock Text="Archived" FontSize="11" Foreground="{DynamicResource App.TextMutedBrush}"/>
+                    <TextBlock Text="{Binding Summary.ArchivedDocs}" FontSize="20" FontWeight="Bold"
+                               Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                </StackPanel>
+                <StackPanel>
+                    <TextBlock Text="Missing Blobs" FontSize="11" Foreground="{DynamicResource App.TextMutedBrush}"/>
+                    <TextBlock Text="{Binding Summary.MissingBlobsCount}" FontSize="20" FontWeight="Bold"
+                               Foreground="{DynamicResource App.WarningBrush}"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Toolbar -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,12">
+            <Button Content="&#xE710; Add Document" FontFamily="Segoe MDL2 Assets"
+                    Command="{Binding AddDocumentCommand}"
+                    Style="{StaticResource PrimaryButton}" Padding="12,8" Margin="0,0,8,0"/>
+            <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" Width="200"
+                     Padding="8,6" Margin="0,0,8,0"/>
+            <TextBox Text="{Binding TagFilter, UpdateSourceTrigger=PropertyChanged}" Width="120"
+                     Padding="8,6" Margin="0,0,8,0"/>
+            <CheckBox Content="Archived" IsChecked="{Binding ShowArchivedOnly}" VerticalAlignment="Center" Margin="0,0,8,0"
+                      Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+            <CheckBox Content="Missing Blob" IsChecked="{Binding ShowMissingBlobOnly}" VerticalAlignment="Center" Margin="0,0,8,0"
+                      Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+            <Button Content="Refresh" Command="{Binding RefreshCommand}" Padding="12,8"/>
+        </StackPanel>
+
+        <!-- Documents Grid -->
+        <DataGrid Grid.Row="3" ItemsSource="{Binding Documents}"
+                  SelectedItem="{Binding SelectedDocument}"
+                  AutoGenerateColumns="False" IsReadOnly="True"
+                  CanUserSortColumns="True"
+                  HeadersVisibility="Column" GridLinesVisibility="Horizontal"
+                  Background="{DynamicResource App.SurfaceBrush}"
+                  Foreground="{DynamicResource App.TextPrimaryBrush}"
+                  BorderBrush="{DynamicResource App.BorderBrush}" BorderThickness="1"
+                  RowBackground="{DynamicResource App.SurfaceBrush}"
+                  AlternatingRowBackground="{DynamicResource App.BackgroundBrush}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="File Name" Binding="{Binding FileName}" Width="*"/>
+                <DataGridTextColumn Header="Type" Binding="{Binding MimeType}" Width="140"/>
+                <DataGridTextColumn Header="Size" Binding="{Binding SizeBytes, StringFormat=N0}" Width="80"/>
+                <DataGridTextColumn Header="Created" Binding="{Binding CreatedDate, StringFormat=yyyy-MM-dd}" Width="100"/>
+                <DataGridCheckBoxColumn Header="Archived" Binding="{Binding IsArchived}" Width="70"/>
+                <DataGridCheckBoxColumn Header="Blob" Binding="{Binding BlobExists}" Width="60"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- Actions -->
+        <StackPanel Grid.Row="4" Orientation="Horizontal" Margin="0,12,0,0">
+            <Button Content="Export" Command="{Binding ExportDocumentCommand}" Padding="12,8" Margin="0,0,8,0"/>
+            <Button Content="Archive" Command="{Binding ArchiveDocumentCommand}" Padding="12,8" Margin="0,0,8,0"/>
+            <Button Content="Purge Local Blob" Command="{Binding PurgeDocumentBlobCommand}" Padding="12,8"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

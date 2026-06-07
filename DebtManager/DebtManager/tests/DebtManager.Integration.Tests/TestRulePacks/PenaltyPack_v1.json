@@ -1,0 +1,28 @@
+{
+  "rules": [
+    {
+      "key": "penalty.after_grace",
+      "when": {
+        "all": [
+          {
+            "fact": "days_overdue",
+            "op": ">",
+            "value": 10
+          },
+          {
+            "fact": "outstanding_amount",
+            "op": ">",
+            "value": 0
+          }
+        ]
+      },
+      "effect": {
+        "add_charge": {
+          "amount": 50,
+          "label": "Late penalty (>10d grace)",
+          "chargeType": "penalty"
+        }
+      }
+    }
+  ]
+}

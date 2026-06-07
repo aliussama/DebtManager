@@ -1,0 +1,276 @@
+<UserControl x:Class="DebtManager.Desktop.Views.DefineScheduleView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="550" d:DesignWidth="500"
+             Background="{DynamicResource App.SurfaceBrush}">
+
+    <UserControl.Resources>
+        <Style x:Key="FormLabel" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource App.TextSecondaryBrush}"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Margin" Value="0,0,0,6"/>
+        </Style>
+
+        <Style x:Key="FormInput" TargetType="TextBox">
+            <Setter Property="Background" Value="{DynamicResource App.InputBackgroundBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource App.InputForegroundBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource App.InputBorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="12,10"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="0,0,0,4"/>
+        </Style>
+
+        <Style x:Key="FormComboBox" TargetType="ComboBox">
+            <Setter Property="Background" Value="{DynamicResource App.InputBackgroundBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource App.InputForegroundBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource App.InputBorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="12,10"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="0,0,0,12"/>
+        </Style>
+
+        <Style x:Key="ErrorText" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource App.DangerBrush}"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Margin" Value="0,0,0,12"/>
+        </Style>
+
+        <Style x:Key="PrimaryButton" TargetType="Button">
+            <Setter Property="Background" Value="{DynamicResource App.AccentBrush}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="24,12"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style x:Key="SecondaryButton" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{DynamicResource App.TextSecondaryBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource App.InputBorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="24,12"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style x:Key="SmallButton" TargetType="Button">
+            <Setter Property="Background" Value="{DynamicResource App.SuccessBrush}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="12,6"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+    </UserControl.Resources>
+
+    <Border CornerRadius="16" Padding="32">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <!-- Header -->
+                <TextBlock Text="Define Payment Schedule" 
+                           FontSize="22" 
+                           FontWeight="Bold" 
+                           Foreground="{DynamicResource App.TextPrimaryBrush}"
+                           Margin="0,0,0,24"/>
+
+                <!-- Obligation Selection -->
+                <TextBlock Text="OBLIGATION" Style="{StaticResource FormLabel}"/>
+                <ComboBox ItemsSource="{Binding Obligations}" 
+                          SelectedItem="{Binding SelectedObligation}"
+                          Style="{StaticResource FormComboBox}"
+                          DisplayMemberPath="Name"/>
+
+                <!-- Schedule Type -->
+                <TextBlock Text="SCHEDULE TYPE" Style="{StaticResource FormLabel}"/>
+                <ComboBox ItemsSource="{Binding ScheduleTypes}" 
+                          SelectedItem="{Binding SelectedScheduleType}"
+                          Style="{StaticResource FormComboBox}"/>
+
+                <!-- Effective Date -->
+                <TextBlock Text="EFFECTIVE DATE" Style="{StaticResource FormLabel}"/>
+                <DatePicker SelectedDate="{Binding EffectiveDate, Converter={StaticResource DateOnlyConverter}}"
+                            Background="{DynamicResource App.InputBackgroundBrush}"
+                            Foreground="{DynamicResource App.InputForegroundBrush}"
+                            BorderBrush="{DynamicResource App.InputBorderBrush}"
+                            Padding="12,10"
+                            Margin="0,0,0,12"/>
+
+                <!-- Currency -->
+                <TextBlock Text="CURRENCY" Style="{StaticResource FormLabel}"/>
+                <ComboBox ItemsSource="{Binding Currencies}" 
+                          SelectedItem="{Binding CurrencyCode}"
+                          Style="{StaticResource FormComboBox}"/>
+
+                <!-- Fixed Dates Section -->
+                <StackPanel Visibility="{Binding IsFixedDates, Converter={StaticResource BoolToVis}}">
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                        <TextBlock Text="INSTALLMENTS" Style="{StaticResource FormLabel}" VerticalAlignment="Center"/>
+                        <Button Content="+ Add Date" 
+                                Command="{Binding AddFixedDateCommand}"
+                                Style="{StaticResource SmallButton}"
+                                Margin="12,0,0,0"/>
+                    </StackPanel>
+
+                    <ItemsControl ItemsSource="{Binding FixedDates}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,0,0,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <DatePicker Grid.Column="0"
+                                                SelectedDate="{Binding DueDate, Converter={StaticResource DateOnlyConverter}}"
+                                                Background="{DynamicResource App.InputBackgroundBrush}"
+                                                Foreground="{DynamicResource App.InputForegroundBrush}"
+                                                BorderBrush="{DynamicResource App.InputBorderBrush}"
+                                                Margin="0,0,8,0"/>
+
+                                    <TextBox Grid.Column="1"
+                                             Text="{Binding Amount, UpdateSourceTrigger=PropertyChanged}"
+                                             Background="{DynamicResource App.InputBackgroundBrush}"
+                                             Foreground="{DynamicResource App.InputForegroundBrush}"
+                                             BorderBrush="{DynamicResource App.InputBorderBrush}"
+                                             Padding="12,10"
+                                             Margin="0,0,8,0"/>
+
+                                    <Button Grid.Column="2"
+                                            Content="X"
+                                            Command="{Binding DataContext.RemoveFixedDateCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                            CommandParameter="{Binding}"
+                                            Background="{DynamicResource App.DangerBrush}"
+                                            Foreground="White"
+                                            Padding="8,6"
+                                            BorderThickness="0"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <TextBlock Text="Add at least one installment date and amount."
+                               Foreground="{DynamicResource App.TextSecondaryBrush}"
+                               FontSize="11"
+                               Margin="0,4,0,12"
+                               Visibility="{Binding FixedDates.Count, Converter={StaticResource NullToCollapsed}}"/>
+                </StackPanel>
+
+                <!-- Recurring Section -->
+                <StackPanel Visibility="{Binding IsRecurring, Converter={StaticResource BoolToVis}}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                            <TextBlock Text="DAY OF MONTH" Style="{StaticResource FormLabel}"/>
+                            <TextBox Text="{Binding RecurrenceDayOfMonth, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource FormInput}"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                            <TextBlock Text="NUMBER OF PAYMENTS" Style="{StaticResource FormLabel}"/>
+                            <TextBox Text="{Binding RecurrenceCount, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource FormInput}"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <TextBlock Text="AMOUNT PER PAYMENT" Style="{StaticResource FormLabel}" Margin="0,8,0,0"/>
+                    <TextBox Text="{Binding RecurrenceAmount, UpdateSourceTrigger=PropertyChanged}"
+                             Style="{StaticResource FormInput}"/>
+                </StackPanel>
+
+                <!-- Amortization Section -->
+                <StackPanel Visibility="{Binding IsAmortization, Converter={StaticResource BoolToVis}}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                            <TextBlock Text="PRINCIPAL AMOUNT" Style="{StaticResource FormLabel}"/>
+                            <TextBox Text="{Binding AmortizationPrincipal, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource FormInput}"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                            <TextBlock Text="ANNUAL INTEREST RATE (%)" Style="{StaticResource FormLabel}"/>
+                            <TextBox Text="{Binding AmortizationInterestRate, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource FormInput}"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid Margin="0,8,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                            <TextBlock Text="TERM (MONTHS)" Style="{StaticResource FormLabel}"/>
+                            <TextBox Text="{Binding AmortizationTermMonths, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource FormInput}"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                            <TextBlock Text="START DATE" Style="{StaticResource FormLabel}"/>
+                            <DatePicker SelectedDate="{Binding AmortizationStartDate, Converter={StaticResource DateOnlyConverter}}"
+                                        Background="{DynamicResource App.InputBackgroundBrush}"
+                                        Foreground="{DynamicResource App.InputForegroundBrush}"
+                                        BorderBrush="{DynamicResource App.InputBorderBrush}"
+                                        Padding="12,10"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <TextBlock Text="Installments will be calculated automatically based on principal, interest rate, and term."
+                               Foreground="{DynamicResource App.TextSecondaryBrush}"
+                               FontSize="11"
+                               Margin="0,12,0,0"
+                               TextWrapping="Wrap"/>
+                </StackPanel>
+
+                <!-- Timezone -->
+                <TextBlock Text="TIMEZONE" Style="{StaticResource FormLabel}" Margin="0,8,0,0"/>
+                <ComboBox ItemsSource="{Binding Timezones}" 
+                          SelectedItem="{Binding Timezone}"
+                          Style="{StaticResource FormComboBox}"/>
+
+                <!-- Error Message -->
+                <TextBlock Text="{Binding ErrorMessage}" 
+                           Style="{StaticResource ErrorText}"
+                           FontWeight="SemiBold"
+                           Visibility="{Binding ErrorMessage, Converter={StaticResource NullToCollapsed}}"/>
+
+                <!-- Buttons -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
+                    <Button Content="Cancel" 
+                            Command="{Binding CancelCommand}"
+                            Style="{StaticResource SecondaryButton}"
+                            Margin="0,0,12,0"/>
+                    <Button Content="Define Schedule" 
+                            Command="{Binding DefineCommand}"
+                            Style="{StaticResource PrimaryButton}"/>
+                </StackPanel>
+
+                <!-- Loading Indicator -->
+                <ProgressBar IsIndeterminate="True" 
+                             Height="3" 
+                             Margin="0,16,0,0"
+                             Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}"/>
+            </StackPanel>
+        </ScrollViewer>
+    </Border>
+</UserControl>

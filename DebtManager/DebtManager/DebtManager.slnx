@@ -1,0 +1,13 @@
+<Solution>
+  <Project Path="cloud/DebtManager.Cloud/DebtManager.Cloud.csproj" />
+  <Project Path="src/DebtManager.Application/DebtManager.Application.csproj" Id="d7dff98f-4e38-4cf6-bba9-96cfe2dd5b1d" />
+  <Project Path="src/DebtManager.Desktop/DebtManager.Desktop.csproj" Id="5aef0d40-d440-49f0-b10e-15ffaf56174f" />
+  <Project Path="src/DebtManager.Domain/DebtManager.Domain.csproj" Id="87a51df8-e226-4ac4-ac52-019e83575d5f" />
+  <Project Path="src/DebtManager.Infrastructure/DebtManager.Infrastructure.csproj" Id="bbd74b68-0200-49a3-965d-a609c9fa50fd" />
+  <Project Path="src/DebtManager.Reporting/DebtManager.Reporting.csproj" Id="88a68d97-0f16-459a-a335-211e15807f71" />
+  <Project Path="src/DebtManager.RuleLab/DebtManager.RuleLab.csproj" Id="1ecc0ae1-c353-42db-a63f-f9acc36a9a3b" />
+  <Project Path="src/DebtManager.Sync/DebtManager.Sync.csproj" Id="3db3cca4-abf2-45f1-825d-a0def0a4d67c" />
+  <Project Path="tests/DebtManager.Domain.Tests/DebtManager.Domain.Tests.csproj" Id="00514c30-da0c-4bba-838e-cac0a874ff62" />
+  <Project Path="tests/DebtManager.Integration.Tests/DebtManager.Integration.Tests.csproj" Id="60dd9ec3-cdd9-48f5-91ad-b670f9a980fb" />
+  <Project Path="tests/DebtManager.RuleEngine.Tests/DebtManager.RuleEngine.Tests.csproj" Id="64b95d75-b632-4d22-9dcc-d9234c093ef3" />
+</Solution>

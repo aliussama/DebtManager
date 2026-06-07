@@ -1,0 +1,167 @@
+<UserControl x:Class="DebtManager.Desktop.Views.NotificationsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="700" d:DesignWidth="1000"
+             Background="{DynamicResource App.BackgroundBrush}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Padding="24,20,24,12">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel>
+                    <TextBlock Text="Notification Center" FontSize="22" FontWeight="Bold"
+                               Foreground="{DynamicResource App.TextPrimaryBrush}"/>
+                    <TextBlock Text="Alerts, reminders, and follow-ups across all finance domains"
+                               FontSize="12" Foreground="{DynamicResource App.TextMutedBrush}" Margin="0,2,0,0"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Content="Refresh" Command="{Binding RefreshCommand}"
+                            Style="{StaticResource PrimaryButton}" Padding="16,8" Margin="0,0,8,0"/>
+                    <Button Content="Export CSV" Command="{Binding ExportCsvCommand}" Padding="16,8"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Summary Cards -->
+        <Border Grid.Row="1" Padding="24,0,24,12">
+            <UniformGrid Columns="5" Margin="0,0,0,0">
+                <Border Background="{DynamicResource App.SurfaceBrush}" CornerRadius="10" Padding="16,12" Margin="0,0,8,0">
+                    <StackPanel>
+                        <TextBlock Text="Active" FontSize="11" Foreground="{DynamicResource App.TextMutedBrush}"/>
+                        <TextBlock Text="{Binding TotalActive}" FontSize="24" FontWeight="Bold"
+                                   Foreground="{DynamicResource App.TextPrimaryBrush}"/>
+                    </StackPanel>
+                </Border>
+                <Border Background="{DynamicResource App.SurfaceBrush}" CornerRadius="10" Padding="16,12" Margin="0,0,8,0">
+                    <StackPanel>
+                        <TextBlock Text="Critical" FontSize="11" Foreground="{DynamicResource App.DangerBrush}"/>
+                        <TextBlock Text="{Binding CriticalCount}" FontSize="24" FontWeight="Bold"
+                                   Foreground="{DynamicResource App.DangerBrush}"/>
+                    </StackPanel>
+                </Border>
+                <Border Background="{DynamicResource App.SurfaceBrush}" CornerRadius="10" Padding="16,12" Margin="0,0,8,0">
+                    <StackPanel>
+                        <TextBlock Text="Errors" FontSize="11" Foreground="{DynamicResource App.DangerBrush}"/>
+                        <TextBlock Text="{Binding ErrorCount}" FontSize="24" FontWeight="Bold"
+                                   Foreground="{DynamicResource App.TextPrimaryBrush}"/>
+                    </StackPanel>
+                </Border>
+                <Border Background="{DynamicResource App.SurfaceBrush}" CornerRadius="10" Padding="16,12" Margin="0,0,8,0">
+                    <StackPanel>
+                        <TextBlock Text="Warnings" FontSize="11" Foreground="{DynamicResource App.WarningBrush}"/>
+                        <TextBlock Text="{Binding WarningCount}" FontSize="24" FontWeight="Bold"
+                                   Foreground="{DynamicResource App.TextPrimaryBrush}"/>
+                    </StackPanel>
+                </Border>
+                <Border Background="{DynamicResource App.SurfaceBrush}" CornerRadius="10" Padding="16,12">
+                    <StackPanel>
+                        <TextBlock Text="Overdue" FontSize="11" Foreground="{DynamicResource App.DangerBrush}"/>
+                        <TextBlock Text="{Binding OverdueCount}" FontSize="24" FontWeight="Bold"
+                                   Foreground="{DynamicResource App.TextPrimaryBrush}"/>
+                    </StackPanel>
+                </Border>
+            </UniformGrid>
+        </Border>
+
+        <!-- Filters -->
+        <Border Grid.Row="2" Padding="24,0,24,12">
+            <StackPanel Orientation="Horizontal">
+                <ComboBox ItemsSource="{Binding SeverityOptions}" SelectedItem="{Binding SelectedSeverity}"
+                          Width="120" Margin="0,0,8,0"/>
+                <ComboBox ItemsSource="{Binding AreaOptions}" SelectedItem="{Binding SelectedArea}"
+                          Width="140" Margin="0,0,8,0"/>
+                <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                         Width="200" Margin="0,0,8,0"/>
+                <CheckBox Content="Include acknowledged" IsChecked="{Binding IncludeAcknowledged}"
+                          Foreground="{DynamicResource App.TextSecondaryBrush}" VerticalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Notifications List -->
+        <Border Grid.Row="3" Padding="24,0,24,16">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="320"/>
+                </Grid.ColumnDefinitions>
+
+                <DataGrid Grid.Column="0"
+                          ItemsSource="{Binding Notifications}"
+                          SelectedItem="{Binding SelectedNotification}"
+                          AutoGenerateColumns="False" IsReadOnly="True"
+                          HeadersVisibility="Column" GridLinesVisibility="None"
+                          Background="{DynamicResource App.SurfaceBrush}"
+                          Foreground="{DynamicResource App.TextPrimaryBrush}"
+                          BorderThickness="0" RowHeaderWidth="0"
+                          CanUserReorderColumns="False"
+                          SelectionMode="Single"
+                          Margin="0,0,12,0">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Severity" Binding="{Binding Severity}" Width="80"/>
+                        <DataGridTextColumn Header="Area" Binding="{Binding Area}" Width="90"/>
+                        <DataGridTextColumn Header="Title" Binding="{Binding Title}" Width="*"/>
+                        <DataGridTextColumn Header="Due" Binding="{Binding DueDate, StringFormat=yyyy-MM-dd}" Width="100"/>
+                        <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="100"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <!-- Detail Panel -->
+                <Border Grid.Column="1" Background="{DynamicResource App.SurfaceBrush}"
+                        CornerRadius="10" Padding="16"
+                        Visibility="{Binding HasSelectedNotification, Converter={StaticResource BoolToVisibility}}">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+                            <TextBlock Text="{Binding SelectedNotification.Title}" FontSize="15" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource App.TextPrimaryBrush}" TextWrapping="Wrap"/>
+                            <TextBlock Text="{Binding SelectedNotification.Severity}" FontSize="11"
+                                       Foreground="{DynamicResource App.WarningBrush}" Margin="0,4,0,0"/>
+                            <TextBlock Text="{Binding SelectedNotification.Area}" FontSize="11"
+                                       Foreground="{DynamicResource App.TextMutedBrush}" Margin="0,2,0,8"/>
+                            <TextBlock Text="{Binding SelectedNotification.Body}" FontSize="12"
+                                       Foreground="{DynamicResource App.TextSecondaryBrush}" TextWrapping="Wrap"/>
+
+                            <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
+                                <Button Content="Acknowledge" Style="{StaticResource SuccessButton}"
+                                        Command="{Binding AcknowledgeCommand}"
+                                        CommandParameter="{Binding SelectedNotification}"
+                                        Padding="12,6" Margin="0,0,6,0"/>
+                                <Button Content="Dismiss"
+                                        Command="{Binding DismissCommand}"
+                                        CommandParameter="{Binding SelectedNotification}"
+                                        Padding="12,6" Margin="0,0,6,0"/>
+                                <Button Content="Snooze 7d"
+                                        Command="{Binding SnoozeCommand}"
+                                        CommandParameter="{Binding SelectedNotification}"
+                                        Padding="12,6"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- Loading overlay -->
+        <Border Grid.RowSpan="4" Background="{DynamicResource App.OverlayBrush}"
+                Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibility}}">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <ProgressBar IsIndeterminate="True" Width="200" Height="4"/>
+                <TextBlock Text="Loading notifications..." FontSize="12"
+                           Foreground="{DynamicResource App.TextSecondaryBrush}"
+                           HorizontalAlignment="Center" Margin="0,8,0,0"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

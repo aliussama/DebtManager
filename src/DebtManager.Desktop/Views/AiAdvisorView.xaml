@@ -1,0 +1,142 @@
+<UserControl x:Class="DebtManager.Desktop.Views.AiAdvisorView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="600" d:DesignWidth="900"
+             Background="{DynamicResource App.BackgroundBrush}">
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,16">
+            <TextBlock Text="AI Advisor" FontSize="22" FontWeight="Bold"
+                       Foreground="{DynamicResource App.TextPrimaryBrush}"/>
+            <TextBlock Text="Deterministic insights and proposals based on your financial state. AI never writes events directly."
+                       FontSize="12" Foreground="{DynamicResource App.TextSecondaryBrush}" Margin="0,4,0,0"/>
+        </StackPanel>
+
+        <!-- Controls Bar -->
+        <Border Grid.Row="1" Background="{DynamicResource App.SurfaceBrush}" CornerRadius="10" Padding="16" Margin="0,0,0,16">
+            <StackPanel Orientation="Horizontal">
+                <Button Padding="12,6" Margin="0,0,12,0"
+                              Command="{Binding ToggleAiCommand}">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                            <Setter Property="Content" Value="Enable AI"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsAiEnabled}" Value="True">
+                                    <Setter Property="Content" Value="Disable AI"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Button Content="Run Analysis" Command="{Binding RunAnalysisCommand}"
+                        Style="{StaticResource PrimaryButton}" Padding="12,6" Margin="0,0,12,0"/>
+                <Button Content="Export CSV" Command="{Binding ExportInsightsCsvCommand}"
+                        Padding="12,6" Margin="0,0,12,0"/>
+                <TextBlock Text="{Binding StatusMessage}" VerticalAlignment="Center" FontSize="11"
+                           Foreground="{DynamicResource App.TextMutedBrush}" Margin="12,0,0,0"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Content: Two columns -->
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Insights Column -->
+            <Border Grid.Column="0" Background="{DynamicResource App.SurfaceBrush}" CornerRadius="10" Padding="16" Margin="0,0,8,0">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="Insights" FontSize="16" FontWeight="SemiBold"
+                               Foreground="{DynamicResource App.TextPrimaryBrush}" Margin="0,0,0,12"/>
+                    <ListView ItemsSource="{Binding Insights}" BorderThickness="0" Background="Transparent">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="{DynamicResource App.BorderBrush}" BorderThickness="0,0,0,1"
+                                        Padding="4,8" Margin="0,0,0,4">
+                                    <StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                            <Border Background="{DynamicResource App.AccentBrush}" CornerRadius="4" Padding="6,2" Margin="0,0,8,0">
+                                                <TextBlock Text="{Binding Severity}" FontSize="10" Foreground="White"/>
+                                            </Border>
+                                            <Border Background="{DynamicResource App.BorderBrush}" CornerRadius="4" Padding="6,2">
+                                                <TextBlock Text="{Binding Area}" FontSize="10"
+                                                           Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                                            </Border>
+                                        </StackPanel>
+                                        <TextBlock Text="{Binding Title}" FontWeight="SemiBold" FontSize="13"
+                                                   Foreground="{DynamicResource App.TextPrimaryBrush}"/>
+                                        <TextBlock Text="{Binding Message}" FontSize="11" TextWrapping="Wrap"
+                                                   Foreground="{DynamicResource App.TextSecondaryBrush}" Margin="0,4,0,0"/>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </DockPanel>
+            </Border>
+
+            <!-- Proposals Column -->
+            <Border Grid.Column="1" Background="{DynamicResource App.SurfaceBrush}" CornerRadius="10" Padding="16" Margin="8,0,0,0">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="Proposals" FontSize="16" FontWeight="SemiBold"
+                               Foreground="{DynamicResource App.TextPrimaryBrush}" Margin="0,0,0,12"/>
+                    <ListView ItemsSource="{Binding Proposals}" BorderThickness="0" Background="Transparent">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="{DynamicResource App.BorderBrush}" BorderThickness="0,0,0,1"
+                                        Padding="4,8" Margin="0,0,0,4">
+                                    <StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                            <Border Background="{DynamicResource App.AccentBrush}" CornerRadius="4" Padding="6,2" Margin="0,0,8,0">
+                                                <TextBlock Text="{Binding ProposalKind}" FontSize="10" Foreground="White"/>
+                                            </Border>
+                                            <Border Background="{DynamicResource App.BorderBrush}" CornerRadius="4" Padding="6,2" Margin="0,0,8,0">
+                                                <TextBlock Text="{Binding RiskLevel}" FontSize="10"
+                                                           Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                                            </Border>
+                                            <Border Background="{DynamicResource App.BorderBrush}" CornerRadius="4" Padding="6,2">
+                                                <TextBlock Text="{Binding Status}" FontSize="10"
+                                                           Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                                            </Border>
+                                        </StackPanel>
+                                        <TextBlock Text="{Binding Reason}" FontSize="12" TextWrapping="Wrap"
+                                                   Foreground="{DynamicResource App.TextPrimaryBrush}" Margin="0,4,0,8"/>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Button Content="Approve" Padding="8,4" Margin="0,0,8,0"
+                                                    Style="{StaticResource PrimaryButton}"
+                                                    Command="{Binding DataContext.ApproveProposalCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"/>
+                                            <Button Content="Reject" Padding="8,4"
+                                                    Command="{Binding DataContext.RejectProposalCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </DockPanel>
+            </Border>
+        </Grid>
+
+        <!-- Loading Overlay -->
+        <Border Grid.RowSpan="3" Background="{DynamicResource App.HeavyOverlayBrush}"
+                Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibility}}">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <ProgressBar IsIndeterminate="True" Width="200" Height="4"/>
+                <TextBlock Text="Analyzing..." FontSize="14" Margin="0,12,0,0"
+                           Foreground="{DynamicResource App.TextPrimaryBrush}" HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

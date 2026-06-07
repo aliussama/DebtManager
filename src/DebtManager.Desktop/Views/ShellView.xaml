@@ -1,0 +1,922 @@
+<UserControl x:Class="DebtManager.Desktop.Views.ShellView"
+xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+xmlns:views="clr-namespace:DebtManager.Desktop.Views"
+xmlns:controls="clr-namespace:DebtManager.Desktop.Controls"
+mc:Ignorable="d"
+d:DesignHeight="700" d:DesignWidth="1200"
+Background="{DynamicResource App.BackgroundBrush}">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="240"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Sidebar Navigation -->
+        <Border Grid.Column="0" Background="{DynamicResource App.SurfaceBrush}"
+                BorderBrush="{DynamicResource App.BorderBrush}" BorderThickness="0,0,1,0">
+            <DockPanel>
+                <!-- Logo/Title + Add Button -->
+                <Border DockPanel.Dock="Top" Padding="20,20,20,0" Margin="0,0,0,8">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Orientation="Horizontal">
+                            <Border Background="{DynamicResource App.AccentBrush}" 
+                                    CornerRadius="8" Width="32" Height="32"
+                                    Margin="0,0,10,0">
+                                <TextBlock Text="&#xE825;" FontFamily="Segoe MDL2 Assets"
+                                           FontSize="15" Foreground="White"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="DebtManager" 
+                                           FontSize="16" 
+                                           FontWeight="Bold" 
+                                           Foreground="{DynamicResource App.TextPrimaryBrush}"/>
+                                <TextBlock Text="Finance" 
+                                           FontSize="10" 
+                                           Foreground="{DynamicResource App.TextMutedBrush}"
+                                           Margin="0,-1,0,0"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <!-- Unified "+ Add" Button with ContextMenu -->
+                        <Button Grid.Column="1"
+                                Style="{StaticResource PrimaryButton}"
+                                Padding="8,6" VerticalAlignment="Center"
+                                ToolTip="Quick Actions"
+                                Command="{Binding OpenAddMenuCommand}"
+                                CommandParameter="{Binding RelativeSource={RelativeSource Self}}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE710;" FontFamily="Segoe MDL2 Assets" FontSize="12" 
+                                           VerticalAlignment="Center" Margin="0,0,4,0"/>
+                                <TextBlock Text="Add" FontSize="12" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <Button.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="New Obligation" Command="{Binding CreateObligationCommand}">
+                                        <MenuItem.Icon>
+                                            <TextBlock Text="&#xE8A5;" FontFamily="Segoe MDL2 Assets" FontSize="12"/>
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem Header="Record Payment" Command="{Binding RecordPaymentCommand}">
+                                        <MenuItem.Icon>
+                                            <TextBlock Text="&#xE8C7;" FontFamily="Segoe MDL2 Assets" FontSize="12"/>
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem Header="Define Schedule" Command="{Binding DefineScheduleCommand}">
+                                        <MenuItem.Icon>
+                                            <TextBlock Text="&#xE787;" FontFamily="Segoe MDL2 Assets" FontSize="12"/>
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <Separator/>
+                                    <MenuItem Header="New Account" Command="{Binding NavigateToAccountsCommand}">
+                                        <MenuItem.Icon>
+                                            <TextBlock Text="&#xE825;" FontFamily="Segoe MDL2 Assets" FontSize="12"/>
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem Header="New Category" Command="{Binding NavigateToCategoriesCommand}">
+                                        <MenuItem.Icon>
+                                            <TextBlock Text="&#xE8FD;" FontFamily="Segoe MDL2 Assets" FontSize="12"/>
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem Header="New Budget" Command="{Binding NavigateToBudgetsCommand}">
+                                        <MenuItem.Icon>
+                                            <TextBlock Text="&#xE9F9;" FontFamily="Segoe MDL2 Assets" FontSize="12"/>
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <Separator/>
+                                    <MenuItem Header="New Asset" Command="{Binding NavigateToAssetsCommand}">
+                                        <MenuItem.Icon>
+                                            <TextBlock Text="&#xE80F;" FontFamily="Segoe MDL2 Assets" FontSize="12"/>
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem Header="New Investment" Command="{Binding NavigateToPortfolioInvestmentsCommand}">
+                                        <MenuItem.Icon>
+                                            <TextBlock Text="&#xE9F9;" FontFamily="Segoe MDL2 Assets" FontSize="12"/>
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem Header="New Goal Contribution" Command="{Binding NavigateToGoalsCommand}">
+                                        <MenuItem.Icon>
+                                            <TextBlock Text="&#xE945;" FontFamily="Segoe MDL2 Assets" FontSize="12"/>
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                </ContextMenu>
+                            </Button.ContextMenu>
+                        </Button>
+                    </Grid>
+                </Border>
+
+                <!-- Separator -->
+                <Border DockPanel.Dock="Top" Height="1" Background="{DynamicResource App.BorderBrush}" Margin="16,8,16,8"/>
+
+                <!-- Bottom Section (Settings + Sync) -->
+                <StackPanel DockPanel.Dock="Bottom" Margin="8,0,8,12">
+                    <Button Command="{Binding NavigateToSettingsCommand}"
+                            HorizontalContentAlignment="Left"
+                            Padding="12,9" Margin="0,4,0,0">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE713;" FontFamily="Segoe MDL2 Assets" FontSize="14" 
+                                       Margin="0,0,10,0" VerticalAlignment="Center"
+                                       Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                            <TextBlock Text="Settings" FontSize="13" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Border Background="{DynamicResource App.BackgroundBrush}" CornerRadius="10" Padding="12" Margin="0,8,0,0">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                <TextBlock Text="&#xE895;" FontFamily="Segoe MDL2 Assets" FontSize="12" 
+                                           Margin="0,0,6,0" VerticalAlignment="Center"
+                                           Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                                <TextBlock Text="Sync Status" FontSize="11" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource App.TextPrimaryBrush}"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <TextBlock Text="{Binding SyncStatusMessage}" 
+                                       FontSize="11" 
+                                       Foreground="{DynamicResource App.TextSecondaryBrush}"
+                                       TextTrimming="CharacterEllipsis"
+                                       TextWrapping="Wrap"
+                                       MaxHeight="32"/>
+                            <TextBlock Text="{Binding LastSyncDisplay}" 
+                                       FontSize="10" 
+                                       Foreground="{DynamicResource App.TextMutedBrush}"
+                                       Margin="0,2,0,0"/>
+                            <Button Content="Sync Now" 
+                                    Command="{Binding SyncCommand}"
+                                    FontSize="11"
+                                    Padding="0,5"
+                                    Margin="0,6,0,0"
+                                    HorizontalContentAlignment="Center">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsSyncing}" Value="True">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                            <ProgressBar IsIndeterminate="True" 
+                                         Height="3" 
+                                         Margin="0,6,0,0"
+                                         Visibility="{Binding IsSyncing, Converter={StaticResource BoolToVisibility}}"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
+                <!-- Scrollable Navigation Groups -->
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
+                              Padding="0,0,0,8">
+                    <StackPanel Margin="8,0,8,0">
+
+                        <!-- Dashboard (always visible, no group) -->
+                        <Button Command="{Binding NavigateToDashboardCommand}"
+                                HorizontalContentAlignment="Left"
+                                Padding="12,9" Margin="0,1">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE80F;" FontFamily="Segoe MDL2 Assets" FontSize="14" 
+                                           Margin="0,0,10,0" VerticalAlignment="Center"
+                                           Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                                <TextBlock Text="Dashboard" FontSize="13" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- ??? FINANCE GROUP ??? -->
+                        <ToggleButton IsChecked="{Binding IsFinanceGroupExpanded, Mode=TwoWay}"
+                                      HorizontalContentAlignment="Left"
+                                      Padding="12,7" Margin="0,8,0,2"
+                                      Background="Transparent" BorderThickness="0" Cursor="Hand">
+                            <ToggleButton.Template>
+                                <ControlTemplate TargetType="ToggleButton">
+                                    <Border Background="Transparent" Padding="{TemplateBinding Padding}">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="FINANCE" FontSize="10" FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource App.TextMutedBrush}" VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="1" FontFamily="Segoe MDL2 Assets" FontSize="10"
+                                                       Foreground="{DynamicResource App.TextMutedBrush}" VerticalAlignment="Center">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Text" Value="&#xE70D;"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsChecked, RelativeSource={RelativeSource AncestorType=ToggleButton}}" Value="True">
+                                                                <Setter Property="Text" Value="&#xE70E;"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </Grid>
+                                    </Border>
+                                </ControlTemplate>
+                            </ToggleButton.Template>
+                        </ToggleButton>
+                        <StackPanel Visibility="{Binding IsFinanceGroupExpanded, Converter={StaticResource BoolToVisibility}}">
+                            <Button Command="{Binding NavigateToAccountsCommand}" HorizontalContentAlignment="Left" Padding="12,9" Margin="0,1">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE825;" FontFamily="Segoe MDL2 Assets" FontSize="14" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                                    <TextBlock Text="Accounts" FontSize="13" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{Binding NavigateToCashLedgerCommand}" HorizontalContentAlignment="Left" Padding="12,9" Margin="0,1">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE8C7;" FontFamily="Segoe MDL2 Assets" FontSize="14" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                                    <TextBlock Text="Cash Ledger" FontSize="13" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{Binding NavigateToObligationsCommand}" HorizontalContentAlignment="Left" Padding="12,9" Margin="0,1">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE8A5;" FontFamily="Segoe MDL2 Assets" FontSize="14" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                                    <TextBlock Text="Obligations" FontSize="13" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{Binding NavigateToPaymentsCommand}" HorizontalContentAlignment="Left" Padding="12,9" Margin="0,1">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE8C7;" FontFamily="Segoe MDL2 Assets" FontSize="14" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                                    <TextBlock Text="Payments" FontSize="13" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{Binding NavigateToRecurringCommand}" HorizontalContentAlignment="Left" Padding="12,9" Margin="0,1">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE787;" FontFamily="Segoe MDL2 Assets" FontSize="14" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                                    <TextBlock Text="Recurring" FontSize="13" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{Binding NavigateToImportCommand}" HorizontalContentAlignment="Left" Padding="12,9" Margin="0,1">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE8E5;" FontFamily="Segoe MDL2 Assets" FontSize="14" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                                    <TextBlock Text="Import" FontSize="13" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{Binding NavigateToBillsCommand}" HorizontalContentAlignment="Left" Padding="12,9" Margin="0,1">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE9F9;" FontFamily="Segoe MDL2 Assets" FontSize="14" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                                    <TextBlock Text="Bills" FontSize="13" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{Binding NavigateToInvoicesCommand}" HorizontalContentAlignment="Left" Padding="12,9" Margin="0,1">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE9F9;" FontFamily="Segoe MDL2 Assets" FontSize="14" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                                    <TextBlock Text="Invoices" FontSize="13" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{Binding NavigateToIncomeSourcesCommand}" HorizontalContentAlignment="Left" Padding="12,9" Margin="0,1">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE946;" FontFamily="Segoe MDL2 Assets" FontSize="14" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                                    <TextBlock Text="Income Sources" FontSize="13" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+
+                        <!-- ??? PLANNING GROUP ??? -->
+                        <ToggleButton IsChecked="{Binding IsPlanningGroupExpanded, Mode=TwoWay}"
+                                      HorizontalContentAlignment="Left"
+                                      Padding="12,7" Margin="0,8,0,2"
+                                      Background="Transparent" BorderThickness="0" Cursor="Hand">
+                            <ToggleButton.Template>
+                                <ControlTemplate TargetType="ToggleButton">
+                                    <Border Background="Transparent" Padding="{TemplateBinding Padding}">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="PLANNING" FontSize="10" FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource App.TextMutedBrush}" VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="1" FontFamily="Segoe MDL2 Assets" FontSize="10"
+                                                       Foreground="{DynamicResource App.TextMutedBrush}" VerticalAlignment="Center">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Text" Value="&#xE70D;"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsChecked, RelativeSource={RelativeSource AncestorType=ToggleButton}}" Value="True">
+                                                                <Setter Property="Text" Value="&#xE70E;"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </Grid>
+                                    </Border>
+                                </ControlTemplate>
+                            </ToggleButton.Template>
+                        </ToggleButton>
+                        <StackPanel Visibility="{Binding IsPlanningGroupExpanded, Converter={StaticResource BoolToVisibility}}">
+                            <Button Command="{Binding NavigateToBudgetsCommand}" HorizontalContentAlignment="Left" Padding="12,9" Margin="0,1">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE9F9;" FontFamily="Segoe MDL2 Assets" FontSize="14" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                                    <TextBlock Text="Budgets" FontSize="13" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{Binding NavigateToGoalsCommand}" HorizontalContentAlignment="Left" Padding="12,9" Margin="0,1">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE945;" FontFamily="Segoe MDL2 Assets" FontSize="14" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                                    <TextBlock Text="Goals" FontSize="13" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{Binding NavigateToRetirementCommand}" HorizontalContentAlignment="Left" Padding="12,9" Margin="0,1">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE80F;" FontFamily="Segoe MDL2 Assets" FontSize="14" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                                    <TextBlock Text="Retirement" FontSize="13" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{Binding NavigateToSimulationCommand}" HorizontalContentAlignment="Left" Padding="12,9" Margin="0,1">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE945;" FontFamily="Segoe MDL2 Assets" FontSize="14" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                                    <TextBlock Text="Simulation" FontSize="13" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{Binding NavigateToForecastCommand}" HorizontalContentAlignment="Left" Padding="12,9" Margin="0,1">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE9F9;" FontFamily="Segoe MDL2 Assets" FontSize="14" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                                    <TextBlock Text="Forecast" FontSize="13" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{Binding NavigateToScenariosCommand}" HorizontalContentAlignment="Left" Padding="12,9" Margin="0,1">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE81E;" FontFamily="Segoe MDL2 Assets" FontSize="14" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                                    <TextBlock Text="Scenarios" FontSize="13" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+
+                        <!-- ??? INVESTMENTS GROUP ??? -->
+                        <ToggleButton IsChecked="{Binding IsInvestmentsGroupExpanded, Mode=TwoWay}"
+                                      HorizontalContentAlignment="Left"
+                                      Padding="12,7" Margin="0,8,0,2"
+                                      Background="Transparent" BorderThickness="0" Cursor="Hand">
+                            <ToggleButton.Template>
+                                <ControlTemplate TargetType="ToggleButton">
+                                    <Border Background="Transparent" Padding="{TemplateBinding Padding}">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="INVESTMENTS" FontSize="10" FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource App.TextMutedBrush}" VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="1" FontFamily="Segoe MDL2 Assets" FontSize="10"
+                                                       Foreground="{DynamicResource App.TextMutedBrush}" VerticalAlignment="Center">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Text" Value="&#xE70D;"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsChecked, RelativeSource={RelativeSource AncestorType=ToggleButton}}" Value="True">
+                                                                <Setter Property="Text" Value="&#xE70E;"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </Grid>
+                                    </Border>
+                                </ControlTemplate>
+                            </ToggleButton.Template>
+                        </ToggleButton>
+                        <StackPanel Visibility="{Binding IsInvestmentsGroupExpanded, Converter={StaticResource BoolToVisibility}}">
+                            <Button Command="{Binding NavigateToInvestmentAccountsCommand}" HorizontalContentAlignment="Left" Padding="12,9" Margin="0,1">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE825;" FontFamily="Segoe MDL2 Assets" FontSize="14" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                                    <TextBlock Text="Inv. Accounts" FontSize="13" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{Binding NavigateToPortfolioInvestmentsCommand}" HorizontalContentAlignment="Left" Padding="12,9" Margin="0,1">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE9F9;" FontFamily="Segoe MDL2 Assets" FontSize="14" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                                    <TextBlock Text="Portfolio" FontSize="13" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{Binding NavigateToAssetsCommand}" HorizontalContentAlignment="Left" Padding="12,9" Margin="0,1">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE80F;" FontFamily="Segoe MDL2 Assets" FontSize="14" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                                    <TextBlock Text="Assets" FontSize="13" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{Binding NavigateToNetWorthCommand}" HorizontalContentAlignment="Left" Padding="12,9" Margin="0,1">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE9F9;" FontFamily="Segoe MDL2 Assets" FontSize="14" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                                    <TextBlock Text="Net Worth" FontSize="13" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{Binding NavigateToTaxesCommand}" HorizontalContentAlignment="Left" Padding="12,9" Margin="0,1">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE9F9;" FontFamily="Segoe MDL2 Assets" FontSize="14" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                                    <TextBlock Text="Taxes" FontSize="13" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+
+                        <!-- ??? ADMINISTRATION GROUP ??? -->
+                        <ToggleButton IsChecked="{Binding IsAdminGroupExpanded, Mode=TwoWay}"
+                                      HorizontalContentAlignment="Left"
+                                      Padding="12,7" Margin="0,8,0,2"
+                                      Background="Transparent" BorderThickness="0" Cursor="Hand">
+                            <ToggleButton.Template>
+                                <ControlTemplate TargetType="ToggleButton">
+                                    <Border Background="Transparent" Padding="{TemplateBinding Padding}">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="ADMINISTRATION" FontSize="10" FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource App.TextMutedBrush}" VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="1" FontFamily="Segoe MDL2 Assets" FontSize="10"
+                                                       Foreground="{DynamicResource App.TextMutedBrush}" VerticalAlignment="Center">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Text" Value="&#xE70D;"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsChecked, RelativeSource={RelativeSource AncestorType=ToggleButton}}" Value="True">
+                                                                <Setter Property="Text" Value="&#xE70E;"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </Grid>
+                                    </Border>
+                                </ControlTemplate>
+                            </ToggleButton.Template>
+                        </ToggleButton>
+                        <StackPanel Visibility="{Binding IsAdminGroupExpanded, Converter={StaticResource BoolToVisibility}}">
+                            <Button Command="{Binding NavigateToPartiesCommand}" HorizontalContentAlignment="Left" Padding="12,9" Margin="0,1">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE77B;" FontFamily="Segoe MDL2 Assets" FontSize="14" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                                    <TextBlock Text="Parties" FontSize="13" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{Binding NavigateToContractsCommand}" HorizontalContentAlignment="Left" Padding="12,9" Margin="0,1">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE8A5;" FontFamily="Segoe MDL2 Assets" FontSize="14" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                                    <TextBlock Text="Contracts" FontSize="13" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{Binding NavigateToCategoriesCommand}" HorizontalContentAlignment="Left" Padding="12,9" Margin="0,1">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE8FD;" FontFamily="Segoe MDL2 Assets" FontSize="14" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                                    <TextBlock Text="Categories" FontSize="13" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{Binding NavigateToReportsCommand}" HorizontalContentAlignment="Left" Padding="12,9" Margin="0,1">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE9F9;" FontFamily="Segoe MDL2 Assets" FontSize="14" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                                    <TextBlock Text="Reports" FontSize="13" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{Binding NavigateToRulePacksCommand}" HorizontalContentAlignment="Left" Padding="12,9" Margin="0,1">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE71C;" FontFamily="Segoe MDL2 Assets" FontSize="14" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                                    <TextBlock Text="Rule Packs" FontSize="13" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{Binding NavigateToAuditCommand}" HorizontalContentAlignment="Left" Padding="12,9" Margin="0,1">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE81C;" FontFamily="Segoe MDL2 Assets" FontSize="14" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                                    <TextBlock Text="Audit Trail" FontSize="13" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{Binding NavigateToChargesCommand}" HorizontalContentAlignment="Left" Padding="12,9" Margin="0,1">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE825;" FontFamily="Segoe MDL2 Assets" FontSize="14" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                                    <TextBlock Text="Charges" FontSize="13" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{Binding NavigateToDataQualityCommand}" HorizontalContentAlignment="Left" Padding="12,9" Margin="0,1">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE9D5;" FontFamily="Segoe MDL2 Assets" FontSize="14" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                                    <TextBlock Text="Data Health" FontSize="13" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{Binding NavigateToNotificationsCommand}" HorizontalContentAlignment="Left" Padding="12,9" Margin="0,1">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xEA8F;" FontFamily="Segoe MDL2 Assets" FontSize="14" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                                    <TextBlock Text="Notifications" FontSize="13" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{Binding NavigateToCurrencySettingsCommand}" HorizontalContentAlignment="Left" Padding="12,9" Margin="0,1">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE8C7;" FontFamily="Segoe MDL2 Assets" FontSize="14" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                                    <TextBlock Text="Currency &amp; FX" FontSize="13" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{Binding NavigateToDocumentVaultCommand}" HorizontalContentAlignment="Left" Padding="12,9" Margin="0,1">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE723;" FontFamily="Segoe MDL2 Assets" FontSize="14" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                                    <TextBlock Text="Document Vault" FontSize="13" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{Binding NavigateToImportRulesCommand}" HorizontalContentAlignment="Left" Padding="12,9" Margin="0,1">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE71C;" FontFamily="Segoe MDL2 Assets" FontSize="14" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                                    <TextBlock Text="Import Rules" FontSize="13" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{Binding NavigateToAiAdvisorCommand}" HorizontalContentAlignment="Left" Padding="12,9" Margin="0,1">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE99A;" FontFamily="Segoe MDL2 Assets" FontSize="14" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                                    <TextBlock Text="AI Advisor" FontSize="13" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{Binding NavigateToHelpCommand}" HorizontalContentAlignment="Left" Padding="12,9" Margin="0,1"
+                                    AutomationProperties.Name="Help and troubleshooting" ToolTip="Help &amp; Troubleshooting">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE897;" FontFamily="Segoe MDL2 Assets" FontSize="14" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                                    <TextBlock Text="Help" FontSize="13" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </DockPanel>
+        </Border>
+
+        <!-- Main Content Area -->
+        <Grid Grid.Column="1">
+            <!-- Dashboard View -->
+            <Border Visibility="{Binding CurrentView, Converter={StaticResource StringEqualsToVisibility}, ConverterParameter=Dashboard}">
+                <views:DashboardView DataContext="{Binding Dashboard}"/>
+            </Border>
+
+            <!-- Obligation Detail View -->
+            <Border Visibility="{Binding CurrentView, Converter={StaticResource StringEqualsToVisibility}, ConverterParameter=ObligationDetail}">
+                <views:ObligationDetailView DataContext="{Binding ObligationDetailVm}"/>
+            </Border>
+
+            <!-- Obligations List View -->
+            <Border Visibility="{Binding CurrentView, Converter={StaticResource StringEqualsToVisibility}, ConverterParameter=Obligations}">
+                <views:ObligationsListView DataContext="{Binding ObligationsListVm}"/>
+            </Border>
+
+            <!-- Payments List View -->
+            <Border Visibility="{Binding CurrentView, Converter={StaticResource StringEqualsToVisibility}, ConverterParameter=Payments}">
+                <views:PaymentsListView DataContext="{Binding PaymentsListVm}"/>
+            </Border>
+
+            <!-- Reports View -->
+            <Border Visibility="{Binding CurrentView, Converter={StaticResource StringEqualsToVisibility}, ConverterParameter=Reports}">
+                <views:ReportsView DataContext="{Binding ReportsVm}"/>
+            </Border>
+
+            <!-- Scenario Simulation View -->
+            <Border Visibility="{Binding CurrentView, Converter={StaticResource StringEqualsToVisibility}, ConverterParameter=Simulation}">
+                <views:ScenarioSimulationView DataContext="{Binding SimulationVm}"/>
+            </Border>
+
+            <!-- Audit Trail View -->
+            <Border Visibility="{Binding CurrentView, Converter={StaticResource StringEqualsToVisibility}, ConverterParameter=Audit}">
+                <views:AuditTrailView DataContext="{Binding AuditVm}"/>
+            </Border>
+
+            <!-- Charge Breakdown View -->
+            <Border Visibility="{Binding CurrentView, Converter={StaticResource StringEqualsToVisibility}, ConverterParameter=Charges}">
+                <views:ChargeBreakdownView DataContext="{Binding ChargeBreakdownVm}"/>
+            </Border>
+
+            <!-- Rule Pack Manager View -->
+            <Border Visibility="{Binding CurrentView, Converter={StaticResource StringEqualsToVisibility}, ConverterParameter=RulePacks}">
+                <views:RulePackManagerView DataContext="{Binding RulePackManagerVm}"/>
+            </Border>
+
+            <!-- Settings View -->
+            <Border Visibility="{Binding CurrentView, Converter={StaticResource StringEqualsToVisibility}, ConverterParameter=Settings}"
+                    Background="{DynamicResource App.BackgroundBrush}">
+                <views:SettingsView DataContext="{Binding Settings}"/>
+            </Border>
+
+            <!-- Accounts View -->
+            <Border Visibility="{Binding CurrentView, Converter={StaticResource StringEqualsToVisibility}, ConverterParameter=Accounts}">
+                <views:AccountsView DataContext="{Binding AccountsVm}"/>
+            </Border>
+
+            <!-- Cash Ledger View -->
+            <Border Visibility="{Binding CurrentView, Converter={StaticResource StringEqualsToVisibility}, ConverterParameter=CashLedger}">
+                <views:CashLedgerView DataContext="{Binding CashLedgerVm}"/>
+            </Border>
+
+            <!-- Categories View -->
+            <Border Visibility="{Binding CurrentView, Converter={StaticResource StringEqualsToVisibility}, ConverterParameter=Categories}">
+                <views:CategoriesView DataContext="{Binding CategoriesVm}"/>
+            </Border>
+
+            <!-- Budgets View -->
+            <Border Visibility="{Binding CurrentView, Converter={StaticResource StringEqualsToVisibility}, ConverterParameter=Budgets}">
+                <views:BudgetsView DataContext="{Binding BudgetsVm}"/>
+            </Border>
+
+            <!-- Recurring View -->
+            <Border Visibility="{Binding CurrentView, Converter={StaticResource StringEqualsToVisibility}, ConverterParameter=Recurring}">
+                <views:RecurringView DataContext="{Binding RecurringVm}"/>
+            </Border>
+
+            <!-- Import View -->
+            <Border Visibility="{Binding CurrentView, Converter={StaticResource StringEqualsToVisibility}, ConverterParameter=Import}">
+                <views:ImportView DataContext="{Binding ImportVm}"/>
+            </Border>
+
+            <!-- Assets View -->
+            <Border Visibility="{Binding CurrentView, Converter={StaticResource StringEqualsToVisibility}, ConverterParameter=Assets2}">
+                <views:AssetsView DataContext="{Binding AssetsVm}"/>
+            </Border>
+
+            <!-- Net Worth View -->
+            <Border Visibility="{Binding CurrentView, Converter={StaticResource StringEqualsToVisibility}, ConverterParameter=NetWorth}">
+                <views:NetWorthView DataContext="{Binding NetWorthVm}"/>
+            </Border>
+
+            <!-- Investment Accounts View -->
+            <Border Visibility="{Binding CurrentView, Converter={StaticResource StringEqualsToVisibility}, ConverterParameter=InvestmentAccounts}">
+                <views:InvestmentAccountsView DataContext="{Binding InvestmentAccountsVm}"/>
+            </Border>
+
+            <!-- Portfolio Investments View -->
+            <Border Visibility="{Binding CurrentView, Converter={StaticResource StringEqualsToVisibility}, ConverterParameter=PortfolioInvestments}">
+                <views:PortfolioView DataContext="{Binding PortfolioInvestmentsVm}"/>
+            </Border>
+
+            <!-- Taxes View -->
+            <Border Visibility="{Binding CurrentView, Converter={StaticResource StringEqualsToVisibility}, ConverterParameter=Taxes}">
+                <views:TaxesView DataContext="{Binding TaxesVm}"/>
+            </Border>
+
+            <!-- Goals View -->
+            <Border Visibility="{Binding CurrentView, Converter={StaticResource StringEqualsToVisibility}, ConverterParameter=Goals}">
+                <views:GoalsView DataContext="{Binding GoalsVm}"/>
+            </Border>
+
+            <!-- Retirement View -->
+            <Border Visibility="{Binding CurrentView, Converter={StaticResource StringEqualsToVisibility}, ConverterParameter=Retirement}">
+                <views:RetirementView DataContext="{Binding RetirementVm}"/>
+            </Border>
+
+            <!-- Data Quality View -->
+            <Border Visibility="{Binding CurrentView, Converter={StaticResource StringEqualsToVisibility}, ConverterParameter=DataQuality}">
+                <views:DataQualityView DataContext="{Binding DataQualityVm}"/>
+            </Border>
+
+            <!-- Currency Settings View -->
+            <Border Visibility="{Binding CurrentView, Converter={StaticResource StringEqualsToVisibility}, ConverterParameter=CurrencySettings}">
+                <views:CurrencySettingsView DataContext="{Binding CurrencySettingsVm}"/>
+            </Border>
+
+            <!-- Forecast View -->
+            <Border Visibility="{Binding CurrentView, Converter={StaticResource StringEqualsToVisibility}, ConverterParameter=Forecast}">
+                <views:ForecastView DataContext="{Binding ForecastVm}"/>
+            </Border>
+
+            <!-- Scenarios View -->
+            <Border Visibility="{Binding CurrentView, Converter={StaticResource StringEqualsToVisibility}, ConverterParameter=Scenarios}">
+                <views:ScenariosView DataContext="{Binding ScenariosVm}"/>
+            </Border>
+
+            <!-- Parties View -->
+            <Border Visibility="{Binding CurrentView, Converter={StaticResource StringEqualsToVisibility}, ConverterParameter=Parties}">
+                <views:PartiesView DataContext="{Binding PartiesVm}"/>
+            </Border>
+
+            <!-- Contracts View -->
+            <Border Visibility="{Binding CurrentView, Converter={StaticResource StringEqualsToVisibility}, ConverterParameter=Contracts}">
+                <views:ContractsView DataContext="{Binding ContractsVm}"/>
+            </Border>
+
+            <!-- Bills View -->
+            <Border Visibility="{Binding CurrentView, Converter={StaticResource StringEqualsToVisibility}, ConverterParameter=Bills}">
+                <views:BillsView DataContext="{Binding BillsVm}"/>
+            </Border>
+
+            <!-- Invoices View -->
+            <Border Visibility="{Binding CurrentView, Converter={StaticResource StringEqualsToVisibility}, ConverterParameter=Invoices}">
+                <views:InvoicesView DataContext="{Binding InvoicesVm}"/>
+            </Border>
+
+            <!-- Notifications View -->
+            <Border Visibility="{Binding CurrentView, Converter={StaticResource StringEqualsToVisibility}, ConverterParameter=Notifications}">
+                <views:NotificationsView DataContext="{Binding NotificationsVm}"/>
+            </Border>
+
+            <!-- Document Vault View -->
+            <Border Visibility="{Binding CurrentView, Converter={StaticResource StringEqualsToVisibility}, ConverterParameter=DocumentVault}">
+                <views:DocumentVaultView DataContext="{Binding DocumentVaultVm}"/>
+            </Border>
+
+            <!-- Import Rules View -->
+            <Border Visibility="{Binding CurrentView, Converter={StaticResource StringEqualsToVisibility}, ConverterParameter=ImportRules}">
+                <views:ImportRulesView DataContext="{Binding ImportRulesVm}"/>
+            </Border>
+
+            <!-- AI Advisor View -->
+            <Border Visibility="{Binding CurrentView, Converter={StaticResource StringEqualsToVisibility}, ConverterParameter=AiAdvisor}">
+                <views:AiAdvisorView DataContext="{Binding AiAdvisorVm}"/>
+            </Border>
+
+            <!-- Income Sources View -->
+            <Border Visibility="{Binding CurrentView, Converter={StaticResource StringEqualsToVisibility}, ConverterParameter=IncomeSources}">
+                <views:IncomeSourcesView DataContext="{Binding IncomeSourcesVm}"/>
+            </Border>
+
+            <!-- Help View -->
+            <Border Visibility="{Binding CurrentView, Converter={StaticResource StringEqualsToVisibility}, ConverterParameter=Help}">
+                <views:HelpView DataContext="{Binding HelpVm}"/>
+            </Border>
+
+            <!-- Safe Mode Recovery Banner -->
+            <Border VerticalAlignment="Top" HorizontalAlignment="Stretch"
+                    Background="{DynamicResource App.WarningBrush}" Padding="12,8"
+                    Visibility="{Binding IsSafeMode, Converter={StaticResource BoolToVisibility}}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="{Binding RecoveryBannerMessage}" FontSize="12" 
+                               Foreground="Black" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                    <Button Grid.Column="1" Content="Open Logs" Command="{Binding OpenLogsFolderCommand}"
+                            Padding="8,4" FontSize="11" Margin="8,0" Background="White" Foreground="Black"
+                            ToolTip="Open diagnostic logs folder"/>
+                    <Button Grid.Column="2" Content="Exit Safe Mode" Command="{Binding ExitSafeModeCommand}"
+                            Padding="8,4" FontSize="11" Background="White" Foreground="Black"
+                            ToolTip="Resume normal operation"/>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- Modal Overlay for Create Obligation Dialog -->
+        <Border Grid.ColumnSpan="2" 
+                Background="{DynamicResource App.OverlayBrush}"
+                Visibility="{Binding ShowCreateObligationDialog, Converter={StaticResource BoolToVisibility}}"
+                MouseDown="DialogOverlay_MouseDown">
+            <Grid>
+                <!-- Click outside to close -->
+                <Border Background="Transparent" 
+                        MouseDown="CloseDialogOverlay_Click"/>
+                
+                <!-- Dialog Container -->
+                <Border Background="{DynamicResource App.SurfaceBrush}" 
+                        CornerRadius="16"
+                        MaxWidth="500"
+                        MaxHeight="660"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center"
+                        Margin="40">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="40" ShadowDepth="0" Opacity="0.5" Color="Black"/>
+                    </Border.Effect>
+                    <Grid>
+                        <!-- Close Button -->
+                        <Button Command="{Binding CloseDialogCommand}"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Top"
+                                Margin="0,12,12,0"
+                                Padding="6"
+                                Background="Transparent"
+                                Foreground="{DynamicResource App.TextSecondaryBrush}"
+                                Panel.ZIndex="10"
+                                ToolTip="Close (Esc)">
+                            <TextBlock Text="&#xE711;" FontFamily="Segoe MDL2 Assets" FontSize="12"/>
+                        </Button>
+                        
+                        <!-- Dialog Content -->
+                        <views:CreateObligationView DataContext="{Binding CreateObligationVm}"/>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- Modal Overlay for Record Payment Dialog -->
+        <Border Grid.ColumnSpan="2" 
+                Background="{DynamicResource App.OverlayBrush}"
+                Visibility="{Binding ShowRecordPaymentDialog, Converter={StaticResource BoolToVisibility}}"
+                MouseDown="DialogOverlay_MouseDown">
+            <Grid>
+                <!-- Click outside to close -->
+                <Border Background="Transparent" 
+                        MouseDown="CloseDialogOverlay_Click"/>
+                
+                <!-- Dialog Container -->
+                <Border Background="{DynamicResource App.SurfaceBrush}" 
+                        CornerRadius="16"
+                        MaxWidth="860"
+                        MaxHeight="680"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center"
+                        Margin="40">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="40" ShadowDepth="0" Opacity="0.5" Color="Black"/>
+                    </Border.Effect>
+                    <Grid>
+                        <!-- Close Button -->
+                        <Button Command="{Binding CloseDialogCommand}"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Top"
+                                Margin="0,12,12,0"
+                                Padding="6"
+                                Background="Transparent"
+                                Foreground="{DynamicResource App.TextSecondaryBrush}"
+                                Panel.ZIndex="10"
+                                ToolTip="Close (Esc)">
+                            <TextBlock Text="&#xE711;" FontFamily="Segoe MDL2 Assets" FontSize="12"/>
+                        </Button>
+                        
+                        <!-- Dialog Content -->
+                        <views:RecordPaymentView DataContext="{Binding RecordPaymentVm}"/>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- Modal Overlay for Define Schedule Dialog -->
+        <Border Grid.ColumnSpan="2" 
+                Background="{DynamicResource App.OverlayBrush}"
+                Visibility="{Binding ShowDefineScheduleDialog, Converter={StaticResource BoolToVisibility}}"
+                MouseDown="DialogOverlay_MouseDown">
+            <Grid>
+                <!-- Click outside to close -->
+                <Border Background="Transparent" 
+                        MouseDown="CloseDialogOverlay_Click"/>
+                
+                <!-- Dialog Container -->
+                <Border Background="{DynamicResource App.SurfaceBrush}" 
+                        CornerRadius="16"
+                        MaxWidth="540"
+                        MaxHeight="700"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center"
+                        Margin="40">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="40" ShadowDepth="0" Opacity="0.5" Color="Black"/>
+                    </Border.Effect>
+                    <Grid>
+                        <!-- Close Button -->
+                        <Button Command="{Binding CloseDialogCommand}"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Top"
+                                Margin="0,12,12,0"
+                                Padding="6"
+                                Background="Transparent"
+                                Foreground="{DynamicResource App.TextSecondaryBrush}"
+                                Panel.ZIndex="10"
+                                ToolTip="Close (Esc)">
+                            <TextBlock Text="&#xE711;" FontFamily="Segoe MDL2 Assets" FontSize="12"/>
+                        </Button>
+                        
+                        <!-- Dialog Content -->
+                        <views:DefineScheduleView DataContext="{Binding DefineScheduleVm}"/>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- Loading Overlay -->
+        <Border Grid.ColumnSpan="2"
+                Background="{DynamicResource App.HeavyOverlayBrush}"
+                Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibility}}">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <ProgressBar IsIndeterminate="True" Width="200" Height="4"/>
+                <TextBlock Text="Loading..." 
+                           Foreground="{DynamicResource App.TextPrimaryBrush}"
+                           FontSize="14"
+                           Margin="0,16,0,0"
+                           HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Toast Notifications -->
+        <controls:ToastHostControl Grid.ColumnSpan="2"
+                                   DataContext="{Binding ToastHost}"
+                                   VerticalAlignment="Top"
+                                   HorizontalAlignment="Right"
+                                   Panel.ZIndex="1000"/>
+
+        <!-- Onboarding Overlay (first-run wizard) -->
+        <Border Grid.ColumnSpan="2"
+                Background="{DynamicResource App.OnboardingOverlayBrush}"
+                Visibility="{Binding IsOnboardingVisible, Converter={StaticResource BoolToVisibility}}"
+                Panel.ZIndex="2000">
+            <views:OnboardingView DataContext="{Binding OnboardingVm}"/>
+        </Border>
+
+        <!-- Initial Setup Wizard Overlay -->
+        <Border Grid.ColumnSpan="2"
+                Background="{DynamicResource App.OnboardingOverlayBrush}"
+                Visibility="{Binding IsInitialSetupVisible, Converter={StaticResource BoolToVisibility}}"
+                Panel.ZIndex="1900">
+            <views:InitialSetupView DataContext="{Binding InitialSetupVm}"/>
+        </Border>
+    </Grid>
+</UserControl>

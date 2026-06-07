@@ -1,0 +1,192 @@
+<UserControl x:Class="DebtManager.Desktop.Views.ReportsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:DebtManager.Desktop.Controls"
+             mc:Ignorable="d"
+             d:DesignHeight="700" d:DesignWidth="1100"
+             Background="{DynamicResource App.BackgroundBrush}">
+
+    <UserControl.Resources>
+    </UserControl.Resources>
+
+    <Grid Margin="24,20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,16">
+            <TextBlock Text="Reports"
+                       FontSize="22" FontWeight="Bold"
+                       Foreground="{DynamicResource App.TextPrimaryBrush}"/>
+            <TextBlock Text="Financial reports, projections, and analytics"
+                       FontSize="13" Foreground="{DynamicResource App.TextSecondaryBrush}" Margin="0,4,0,0"/>
+        </StackPanel>
+
+        <!-- Main Content: 3-column layout -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Left: Report list -->
+            <Border Grid.Column="0" Background="{DynamicResource App.SurfaceBrush}" CornerRadius="8" Padding="12" Margin="0,0,8,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Text="Available Reports" FontSize="13" FontWeight="SemiBold"
+                               Foreground="{DynamicResource App.TextPrimaryBrush}" Margin="0,0,0,8"/>
+
+                    <ListBox Grid.Row="1"
+                             ItemsSource="{Binding AvailableReports}"
+                             SelectedItem="{Binding SelectedReport}"
+                             Background="Transparent"
+                             BorderThickness="0"
+                             Foreground="{DynamicResource App.TextPrimaryBrush}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Margin="4,6">
+                                    <TextBlock Text="{Binding Title}" FontSize="12" FontWeight="Medium"
+                                               Foreground="{DynamicResource App.TextPrimaryBrush}"/>
+                                    <TextBlock Text="{Binding Category}" FontSize="10"
+                                               Foreground="{DynamicResource App.TextMutedBrush}" Margin="0,2,0,0"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
+            </Border>
+
+            <!-- Center: Parameters form -->
+            <Border Grid.Column="1" Background="{DynamicResource App.SurfaceBrush}" CornerRadius="8" Padding="16" Margin="0,0,8,0" Width="240">
+                <StackPanel>
+                    <TextBlock Text="Parameters" FontSize="13" FontWeight="SemiBold"
+                               Foreground="{DynamicResource App.TextPrimaryBrush}" Margin="0,0,0,12"/>
+
+                    <TextBlock Text="From Date" FontSize="11" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                    <DatePicker SelectedDate="{Binding FromDate, Converter={StaticResource DateOnlyConverter}}"
+                                Margin="0,4,0,8"/>
+
+                    <TextBlock Text="To Date" FontSize="11" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                    <DatePicker SelectedDate="{Binding ToDate, Converter={StaticResource DateOnlyConverter}}"
+                                Margin="0,4,0,8"/>
+
+                    <TextBlock Text="Account IDs (comma-separated)" FontSize="11"
+                               Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                    <TextBox Text="{Binding AccountFilter, UpdateSourceTrigger=PropertyChanged}"
+                             Margin="0,4,0,8"/>
+
+                    <TextBlock Text="Tags (comma-separated)" FontSize="11"
+                               Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                    <TextBox Text="{Binding TagFilter, UpdateSourceTrigger=PropertyChanged}"
+                             Margin="0,4,0,12"/>
+
+                    <Button Content="Generate Report"
+                            Command="{Binding GenerateCommand}"
+                            Style="{StaticResource PrimaryButton}"
+                            Padding="12,8"
+                            HorizontalAlignment="Stretch"/>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                        <Button Content="Export CSV"
+                                Command="{Binding ExportCsvCommand}"
+                                Padding="10,6" Margin="0,0,8,0"/>
+                        <Button Content="Print"
+                                Command="{Binding PrintCommand}"
+                                Padding="10,6"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Right: Generated report sections -->
+            <Border Grid.Column="2" Background="{DynamicResource App.SurfaceBrush}" CornerRadius="8" Padding="16">
+                <Grid>
+                    <!-- Empty state when no report generated -->
+                    <controls:EmptyStateControl
+                        IconText="&#xE9F9;"
+                        Title="Select a report"
+                        Message="Choose a report from the list and click Generate to view results."
+                        IsActionVisible="False"
+                        Visibility="{Binding HasGeneratedReport, Converter={StaticResource BoolToVisibility}, ConverterParameter=Inverse}"/>
+
+                    <!-- Generated report content -->
+                    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                  Visibility="{Binding HasGeneratedReport, Converter={StaticResource BoolToVisibility}}">
+                        <StackPanel>
+                            <!-- Report Title -->
+                            <TextBlock Text="{Binding GeneratedReport.Definition.Title}"
+                                       FontSize="18" FontWeight="Bold"
+                                       Foreground="{DynamicResource App.TextPrimaryBrush}" Margin="0,0,0,4"/>
+                            <TextBlock FontSize="10" Foreground="{DynamicResource App.TextMutedBrush}" Margin="0,0,0,16">
+                                <TextBlock.Text>
+                                    <MultiBinding StringFormat="Generated: {0:yyyy-MM-dd HH:mm}">
+                                        <Binding Path="GeneratedReport.GeneratedAt"/>
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+
+                            <!-- Sections -->
+                            <ItemsControl ItemsSource="{Binding DisplaySections}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Margin="0,0,0,16">
+                                            <TextBlock Text="{Binding Title}" FontSize="14" FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource App.TextPrimaryBrush}" Margin="0,0,0,8"/>
+
+                                            <!-- Table Section -->
+                                            <DataGrid Visibility="{Binding IsTable, Converter={StaticResource BoolToVisibility}}"
+                                                      ItemsSource="{Binding Rows}"
+                                                      AutoGenerateColumns="True"
+                                                      IsReadOnly="True"
+                                                      CanUserAddRows="False"
+                                                      CanUserDeleteRows="False"
+                                                      HeadersVisibility="Column"
+                                                      GridLinesVisibility="Horizontal"
+                                                      MaxHeight="300"
+                                                      Background="{DynamicResource App.SurfaceBrush}"
+                                                      Foreground="{DynamicResource App.TextPrimaryBrush}"/>
+
+                                            <!-- Summary Section -->
+                                            <ItemsControl Visibility="{Binding IsSummary, Converter={StaticResource BoolToVisibility}}"
+                                                          ItemsSource="{Binding SummaryLines}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel Orientation="Horizontal" Margin="0,2">
+                                                            <TextBlock Text="{Binding Label, StringFormat={}{0}: }"
+                                                                       FontWeight="SemiBold" FontSize="12"
+                                                                       Foreground="{DynamicResource App.TextPrimaryBrush}"/>
+                                                            <TextBlock Text="{Binding Value}" FontSize="12"
+                                                                       Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- Loading Overlay -->
+        <Border Grid.RowSpan="2" Background="{DynamicResource App.HeavyOverlayBrush}"
+                Visibility="{Binding IsGenerating, Converter={StaticResource BoolToVisibility}}">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <ProgressBar IsIndeterminate="True" Width="200" Height="4"/>
+                <TextBlock Text="Generating report..." FontSize="12" Margin="0,8,0,0"
+                           Foreground="{DynamicResource App.TextSecondaryBrush}" HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

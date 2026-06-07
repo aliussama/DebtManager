@@ -1,0 +1,122 @@
+<UserControl x:Class="DebtManager.Desktop.Views.PortfolioView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:DebtManager.Desktop.Controls"
+             Background="{DynamicResource App.BackgroundBrush}">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+    </UserControl.Resources>
+
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <DockPanel Grid.Row="0" Margin="0,0,0,20">
+            <StackPanel DockPanel.Dock="Left">
+                <TextBlock Text="Portfolio" FontSize="28" FontWeight="Bold"
+                           Foreground="{DynamicResource App.TextPrimaryBrush}"/>
+                <TextBlock Text="Investment holdings, performance, and P&amp;L"
+                           FontSize="14" Foreground="{DynamicResource App.TextSecondaryBrush}" Margin="0,4,0,0"/>
+            </StackPanel>
+            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
+                <Button Command="{Binding RefreshCommand}" Padding="12,8" Margin="0,0,8,0">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE72C;" FontFamily="Segoe MDL2 Assets" FontSize="12" Margin="0,0,6,0" VerticalAlignment="Center"
+                                   Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                        <TextBlock Text="Refresh" FontSize="12"/>
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding ExportCommand}" Padding="12,8">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE78C;" FontFamily="Segoe MDL2 Assets" FontSize="12" Margin="0,0,6,0" VerticalAlignment="Center"
+                                   Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                        <TextBlock Text="Export" FontSize="12"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </DockPanel>
+
+        <!-- Summary Cards -->
+        <UniformGrid Grid.Row="1" Columns="4" Margin="0,0,0,20">
+            <Border Background="{DynamicResource App.SurfaceBrush}" CornerRadius="10" Padding="16" Margin="0,0,8,0">
+                <StackPanel>
+                    <TextBlock Text="MARKET VALUE" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource App.TextMutedBrush}"/>
+                    <TextBlock Text="{Binding TotalMarketValue, StringFormat=N2}" FontSize="22" FontWeight="Bold"
+                               Foreground="{DynamicResource App.AccentBrush}" Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+            <Border Background="{DynamicResource App.SurfaceBrush}" CornerRadius="10" Padding="16" Margin="4,0">
+                <StackPanel>
+                    <TextBlock Text="COST BASIS" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource App.TextMutedBrush}"/>
+                    <TextBlock Text="{Binding TotalCostBasis, StringFormat=N2}" FontSize="18" FontWeight="SemiBold"
+                               Foreground="{DynamicResource App.TextPrimaryBrush}" Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+            <Border Background="{DynamicResource App.SurfaceBrush}" CornerRadius="10" Padding="16" Margin="4,0">
+                <StackPanel>
+                    <TextBlock Text="UNREALIZED P&amp;L" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource App.TextMutedBrush}"/>
+                    <TextBlock Text="{Binding TotalUnrealizedPnL, StringFormat=N2}" FontSize="18" FontWeight="SemiBold"
+                               Foreground="{DynamicResource App.TextPrimaryBrush}" Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+            <Border Background="{DynamicResource App.SurfaceBrush}" CornerRadius="10" Padding="16" Margin="8,0,0,0">
+                <StackPanel>
+                    <TextBlock Text="REALIZED P&amp;L" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource App.TextMutedBrush}"/>
+                    <TextBlock Text="{Binding TotalRealizedPnL, StringFormat=N2}" FontSize="18" FontWeight="SemiBold"
+                               Foreground="{DynamicResource App.TextPrimaryBrush}" Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+        </UniformGrid>
+
+        <!-- Unvalued warning -->
+        <Border Grid.Row="2" Background="#2EFFBB33" CornerRadius="8" Padding="12" Margin="0,0,0,12"
+                Visibility="{Binding UnvaluedPositionCount, Converter={StaticResource BoolToVis}}">
+            <TextBlock FontSize="12" Foreground="{DynamicResource App.TextSecondaryBrush}">
+                <Run Text="?"/>
+                <Run Text="{Binding UnvaluedPositionCount, Mode=OneWay}"/>
+                <Run Text=" position(s) have no market price. Quantity is shown but value is excluded from totals."/>
+            </TextBlock>
+        </Border>
+
+        <!-- Holdings Grid -->
+        <DataGrid Grid.Row="3" ItemsSource="{Binding Positions}" AutoGenerateColumns="False"
+                  IsReadOnly="True" CanUserSortColumns="True"
+                  Background="{DynamicResource App.SurfaceBrush}"
+                  Foreground="{DynamicResource App.TextPrimaryBrush}"
+                  BorderBrush="{DynamicResource App.BorderBrush}" BorderThickness="1"
+                  GridLinesVisibility="Horizontal"
+                  HorizontalGridLinesBrush="{DynamicResource App.BorderBrush}"
+                  RowBackground="{DynamicResource App.SurfaceBrush}"
+                  AlternatingRowBackground="{DynamicResource App.BackgroundBrush}"
+                  HeadersVisibility="Column"
+                  SelectionMode="Single">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Symbol" Binding="{Binding Symbol}" Width="100"/>
+                <DataGridTextColumn Header="Quantity" Binding="{Binding Quantity, StringFormat=N4}" Width="100"/>
+                <DataGridTextColumn Header="Avg Cost" Binding="{Binding AvgCost, StringFormat=N4}" Width="100"/>
+                <DataGridTextColumn Header="Total Cost" Binding="{Binding TotalCost, StringFormat=N2}" Width="120"/>
+                <DataGridTextColumn Header="Market Price" Binding="{Binding MarketPrice, StringFormat=N2}" Width="120"/>
+                <DataGridTextColumn Header="Market Value" Binding="{Binding MarketValue, StringFormat=N2}" Width="120"/>
+                <DataGridTextColumn Header="Unrealized P&amp;L" Binding="{Binding UnrealizedPnL, StringFormat=N2}" Width="120"/>
+                <DataGridTextColumn Header="Valued" Binding="{Binding IsValued}" Width="60"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- Empty State -->
+        <controls:EmptyStateControl Grid.Row="3"
+                                    Visibility="{Binding IsEmpty, Converter={StaticResource BoolToVis}}"
+                                    Title="No Holdings"
+                                    Message="Record investment transactions to see your portfolio."
+                                    IconText="&#xE9F9;"/>
+
+        <!-- Loading -->
+        <ProgressBar Grid.Row="3" IsIndeterminate="True" Height="3" VerticalAlignment="Top"
+                     Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}"/>
+    </Grid>
+</UserControl>

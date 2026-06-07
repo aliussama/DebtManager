@@ -1,0 +1,145 @@
+<UserControl x:Class="DebtManager.Desktop.Views.ScenariosView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignHeight="700" d:DesignWidth="1000"
+             Background="{DynamicResource App.BackgroundBrush}">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="300"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Left: Scenario List -->
+        <Border Grid.Column="0" Background="{DynamicResource App.SurfaceBrush}"
+                BorderBrush="{DynamicResource App.BorderBrush}" BorderThickness="0,0,1,0">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Top" Margin="16,16,16,8">
+                    <TextBlock Text="Scenarios" FontSize="18" FontWeight="Bold"
+                               Foreground="{DynamicResource App.TextPrimaryBrush}" Margin="0,0,0,12"/>
+
+                    <TextBox Text="{Binding NewScenarioName, UpdateSourceTrigger=PropertyChanged}"
+                             Background="{DynamicResource App.InputBackgroundBrush}"
+                             Foreground="{DynamicResource App.InputForegroundBrush}"
+                             BorderBrush="{DynamicResource App.InputBorderBrush}"
+                             Padding="10,8" FontSize="13" Margin="0,0,0,8"/>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                        <Button Command="{Binding CreateScenarioCommand}" Content="Create"
+                                Background="{DynamicResource App.AccentBrush}" Foreground="White"
+                                BorderThickness="0" Padding="16,6" FontWeight="SemiBold" Cursor="Hand"
+                                Margin="0,0,8,0"/>
+                        <Button Command="{Binding ArchiveScenarioCommand}" Content="Archive"
+                                Padding="16,6"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <ListBox ItemsSource="{Binding Scenarios}"
+                         SelectedItem="{Binding SelectedScenario}"
+                         Background="Transparent" BorderThickness="0"
+                         Margin="8,0,8,8">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Margin="8,6">
+                                <TextBlock Text="{Binding Name}" FontSize="13" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource App.TextPrimaryBrush}"/>
+                                <TextBlock FontSize="11" Foreground="{DynamicResource App.TextSecondaryBrush}">
+                                    <Run Text="{Binding HorizonStart, StringFormat='yyyy-MM-dd'}"/>
+                                    <Run Text=" ? "/>
+                                    <Run Text="{Binding HorizonEnd, StringFormat='yyyy-MM-dd'}"/>
+                                    <Run Text=" &#x00B7; "/>
+                                    <Run Text="{Binding ChangeCount}"/>
+                                    <Run Text=" changes"/>
+                                </TextBlock>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+        </Border>
+
+        <!-- Right: Detail -->
+        <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="24">
+                <!-- Changes Section -->
+                <TextBlock Text="Scenario Changes" FontSize="16" FontWeight="SemiBold"
+                           Foreground="{DynamicResource App.TextPrimaryBrush}" Margin="0,0,0,12"/>
+
+                <Border Background="{DynamicResource App.SurfaceBrush}" CornerRadius="12" Padding="16" Margin="0,0,0,16">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                            <ComboBox ItemsSource="{Binding ChangeKindOptions}" SelectedItem="{Binding SelectedChangeKind}"
+                                      Width="180" Margin="0,0,8,0"/>
+                            <TextBox Text="{Binding ChangePayloadJson, UpdateSourceTrigger=PropertyChanged}"
+                                     Width="300" Margin="0,0,8,0"
+                                     Background="{DynamicResource App.InputBackgroundBrush}"
+                                     Foreground="{DynamicResource App.InputForegroundBrush}"
+                                     BorderBrush="{DynamicResource App.InputBorderBrush}"
+                                     Padding="8,6" FontSize="12"/>
+                            <Button Command="{Binding AddChangeCommand}" Content="Add Change"
+                                    Background="{DynamicResource App.AccentBrush}" Foreground="White"
+                                    BorderThickness="0" Padding="14,6" FontWeight="SemiBold" Cursor="Hand"/>
+                        </StackPanel>
+
+                        <DataGrid ItemsSource="{Binding Changes}" AutoGenerateColumns="False" IsReadOnly="True"
+                                  CanUserSortColumns="True" HeadersVisibility="Column" GridLinesVisibility="Horizontal"
+                                  Background="Transparent" BorderThickness="0" RowBackground="Transparent"
+                                  AlternatingRowBackground="{DynamicResource App.BackgroundBrush}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Kind" Binding="{Binding Kind}" Width="140"/>
+                                <DataGridTextColumn Header="Payload" Binding="{Binding PayloadJson}" Width="*"/>
+                                <DataGridTextColumn Header="Removed" Binding="{Binding IsRemoved}" Width="70"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Forecast Actions -->
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                    <Button Command="{Binding RunForecastCommand}" Content="Run Scenario Forecast"
+                            Background="{DynamicResource App.AccentBrush}" Foreground="White"
+                            BorderThickness="0" Padding="20,10" FontWeight="SemiBold" Cursor="Hand"
+                            Margin="0,0,12,0"/>
+                    <Button Command="{Binding ExportCsvCommand}" Content="Export Comparison CSV"
+                            Padding="20,10"/>
+                </StackPanel>
+
+                <!-- Comparison Results -->
+                <Border Background="{DynamicResource App.SurfaceBrush}" CornerRadius="12" Padding="20" Margin="0,0,0,16"
+                        Visibility="{Binding Comparison, Converter={StaticResource NullToCollapsed}}">
+                    <StackPanel>
+                        <TextBlock Text="Comparison Results" FontSize="16" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource App.TextPrimaryBrush}" Margin="0,0,0,12"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource App.TextMutedBrush}"/>
+                            <TextBlock Grid.Row="0" Grid.Column="1" Text="BASELINE" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource App.TextMutedBrush}" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Row="0" Grid.Column="2" Text="SCENARIO" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource App.TextMutedBrush}" HorizontalAlignment="Center"/>
+
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="End Balance" FontSize="13" Foreground="{DynamicResource App.TextPrimaryBrush}" Margin="0,4"/>
+                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Comparison.BaselineEndBalance, StringFormat=N2}" FontSize="13" HorizontalAlignment="Center" Foreground="{DynamicResource App.TextPrimaryBrush}" Margin="0,4"/>
+                            <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding Comparison.ScenarioEndBalance, StringFormat=N2}" FontSize="13" HorizontalAlignment="Center" Foreground="{DynamicResource App.TextPrimaryBrush}" Margin="0,4"/>
+
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Net Cashflow" FontSize="13" Foreground="{DynamicResource App.TextPrimaryBrush}" Margin="0,4"/>
+                            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Comparison.BaselineNetCashflow, StringFormat=N2}" FontSize="13" HorizontalAlignment="Center" Foreground="{DynamicResource App.TextPrimaryBrush}" Margin="0,4"/>
+                            <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding Comparison.ScenarioNetCashflow, StringFormat=N2}" FontSize="13" HorizontalAlignment="Center" Foreground="{DynamicResource App.TextPrimaryBrush}" Margin="0,4"/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <TextBlock Text="{Binding StatusMessage}" FontSize="12" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

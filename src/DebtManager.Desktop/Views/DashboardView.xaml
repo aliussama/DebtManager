@@ -1,0 +1,434 @@
+<UserControl x:Class="DebtManager.Desktop.Views.DashboardView"
+xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+xmlns:controls="clr-namespace:DebtManager.Desktop.Controls"
+mc:Ignorable="d"
+d:DesignHeight="600" d:DesignWidth="1000"
+Background="{DynamicResource App.BackgroundBrush}">
+
+    <UserControl.Resources>
+        <Style x:Key="StatCard" TargetType="Border">
+            <Setter Property="Background" Value="{DynamicResource App.SurfaceBrush}"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Padding" Value="20,16"/>
+            <Setter Property="Margin" Value="0,0,12,12"/>
+        </Style>
+
+        <Style x:Key="StatLabel" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource App.TextMutedBrush}"/>
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+
+        <Style x:Key="StatValue" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource App.TextPrimaryBrush}"/>
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="0,6,0,0"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,20">
+            <TextBlock Text="Dashboard" 
+                       FontSize="24" 
+                       FontWeight="Bold" 
+                       Foreground="{DynamicResource App.TextPrimaryBrush}"/>
+            <TextBlock Text="{Binding StatusMessage}" 
+                       Foreground="{DynamicResource App.TextSecondaryBrush}"
+                       FontSize="13"
+                       Margin="0,4,0,0"/>
+        </StackPanel>
+
+        <!-- Getting Started Card -->
+        <Border Grid.Row="1" Background="{DynamicResource App.SurfaceBrush}" CornerRadius="12" Padding="20,16" Margin="0,0,0,16"
+                Visibility="{Binding ShowGettingStarted, Converter={StaticResource BoolToVisibility}}">
+            <StackPanel>
+                <TextBlock Text="&#xE8F1;" FontFamily="Segoe MDL2 Assets" FontSize="28"
+                           Foreground="{DynamicResource App.AccentBrush}" Margin="0,0,0,8"/>
+                <TextBlock Text="Getting Started" FontSize="17" FontWeight="SemiBold"
+                           Foreground="{DynamicResource App.TextPrimaryBrush}" Margin="0,0,0,4"/>
+                <TextBlock Text="Welcome! Set up your workspace to start tracking your finances."
+                           FontSize="13" Foreground="{DynamicResource App.TextSecondaryBrush}"
+                           TextWrapping="Wrap" Margin="0,0,0,12"/>
+                <WrapPanel>
+                    <Button Content="Open Setup Wizard" Command="{Binding OpenSetupWizardCommand}"
+                            Padding="14,8" Margin="0,0,8,4"
+                            Background="{DynamicResource App.AccentBrush}" Foreground="White" FontWeight="SemiBold"/>
+                    <Button Content="Create Account" Command="{Binding NavigateToAccountsCommand}"
+                            Padding="14,8" Margin="0,0,8,4"/>
+                    <Button Content="Import Transactions" Command="{Binding NavigateToImportCommand}"
+                            Padding="14,8" Margin="0,0,8,4"/>
+                    <Button Content="Start Demo Mode" Command="{Binding SeedDemoCommand}"
+                            Padding="14,8" Margin="0,0,8,4"
+                            Background="Transparent" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                </WrapPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Row 1 - B7 KPI Cards (4 cards) -->
+        <UniformGrid Grid.Row="2" Rows="1" Columns="4" Margin="0,0,0,16">
+            <Border Style="{StaticResource StatCard}" AutomationProperties.Name="Cash Balance">
+                <StackPanel>
+                    <TextBlock Text="CASH BALANCE" Style="{StaticResource StatLabel}"/>
+                    <TextBlock Style="{StaticResource StatValue}" Foreground="{DynamicResource App.SuccessBrush}">
+                        <Run Text="{Binding WidgetCashBalance, StringFormat=N0, Mode=OneWay}"/>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource StatCard}" AutomationProperties.Name="Net Worth">
+                <StackPanel>
+                    <TextBlock Text="NET WORTH" Style="{StaticResource StatLabel}"/>
+                    <TextBlock Style="{StaticResource StatValue}">
+                        <Run Text="{Binding WidgetNetWorth, StringFormat=N0, Mode=OneWay}"/>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource StatCard}" AutomationProperties.Name="Financial Health">
+                <StackPanel>
+                    <TextBlock Text="FINANCIAL HEALTH" Style="{StaticResource StatLabel}"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                        <TextBlock Text="{Binding HealthScore}" Style="{StaticResource StatValue}" Margin="0,0,8,0"/>
+                        <Border Background="{DynamicResource App.AccentBrush}" CornerRadius="6" Padding="10,4" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding HealthGrade}" FontSize="16" FontWeight="Bold" Foreground="White"/>
+                        </Border>
+                    </StackPanel>
+                </StackPanel>
+                <Border.ToolTip>
+                    <ToolTip>
+                        <StackPanel MaxWidth="300">
+                            <TextBlock Text="Financial Health Breakdown" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                            <ItemsControl ItemsSource="{Binding HealthComponents}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Margin="0,3">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Grid.Column="0" Text="{Binding Name}" FontSize="11"/>
+                                                <TextBlock Grid.Column="1" Text="{Binding ValueDisplay}" FontSize="11" FontWeight="SemiBold"/>
+                                            </Grid>
+                                            <TextBlock Text="{Binding Status}" FontSize="10" Foreground="{DynamicResource App.TextMutedBrush}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </ToolTip>
+                </Border.ToolTip>
+            </Border>
+            <Border Style="{StaticResource StatCard}" AutomationProperties.Name="Overdue Count">
+                <StackPanel>
+                    <TextBlock Text="OVERDUE" Style="{StaticResource StatLabel}"/>
+                    <TextBlock Text="{Binding WidgetOverdueObligationCount}" Style="{StaticResource StatValue}" 
+                               Foreground="{DynamicResource App.DangerBrush}"/>
+                </StackPanel>
+            </Border>
+        </UniformGrid>
+
+        <!-- Row 2 - Upcoming Payments + Top Goals -->
+        <Grid Grid.Row="3" Margin="0,0,0,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="12"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Upcoming Payments (next 7 days) -->
+            <Border Grid.Column="0" Background="{DynamicResource App.SurfaceBrush}" CornerRadius="12" Padding="20,16"
+                    AutomationProperties.Name="Upcoming Payments">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="Upcoming Payments (7 days)" FontSize="14" FontWeight="SemiBold"
+                               Foreground="{DynamicResource App.TextPrimaryBrush}" Margin="0,0,0,10"/>
+                    <ItemsControl ItemsSource="{Binding WidgetUpcomingPayments}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Padding="0,6" BorderBrush="{DynamicResource App.BorderBrush}" BorderThickness="0,0,0,1">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="{Binding Title}" FontSize="13"
+                                                   Foreground="{DynamicResource App.TextPrimaryBrush}" TextTrimming="CharacterEllipsis"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding DueDateDisplay}" FontSize="12"
+                                                   Foreground="{DynamicResource App.TextMutedBrush}" Margin="8,0,12,0" VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Column="2" Text="{Binding AmountDisplay}" FontSize="13" FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource App.TextPrimaryBrush}" VerticalAlignment="Center"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </DockPanel>
+            </Border>
+
+            <!-- Top Goals (max 3) -->
+            <Border Grid.Column="2" Background="{DynamicResource App.SurfaceBrush}" CornerRadius="12" Padding="20,16"
+                    AutomationProperties.Name="Top Goals">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="Top Goals" FontSize="14" FontWeight="SemiBold"
+                               Foreground="{DynamicResource App.TextPrimaryBrush}" Margin="0,0,0,10"/>
+                    <ItemsControl ItemsSource="{Binding WidgetTopGoals}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Margin="0,0,0,10">
+                                    <Grid Margin="0,0,0,4">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="{Binding Name}" FontSize="13"
+                                                   Foreground="{DynamicResource App.TextPrimaryBrush}" TextTrimming="CharacterEllipsis"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding ProgressDisplay}" FontSize="12" FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource App.AccentBrush}" VerticalAlignment="Center"/>
+                                    </Grid>
+                                    <Grid Height="6" Background="{DynamicResource App.SurfaceAltBrush}" ClipToBounds="True">
+                                        <Border Background="{DynamicResource App.AccentBrush}" 
+                                                HorizontalAlignment="Left"
+                                                Width="{Binding ProgressRatio, Converter={StaticResource ProgressToWidth}, ConverterParameter=200}"/>
+                                    </Grid>
+                                    <TextBlock FontSize="11" Foreground="{DynamicResource App.TextMutedBrush}" Margin="0,2,0,0">
+                                        <Run Text="Target:"/>
+                                        <Run Text="{Binding TargetDateDisplay, Mode=OneWay}"/>
+                                    </TextBlock>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </DockPanel>
+            </Border>
+        </Grid>
+
+        <!-- Overdue Alert Strip -->
+        <Border Grid.Row="4" Background="{DynamicResource App.DangerSurfaceBrush}" CornerRadius="10" Padding="16,10" Margin="0,0,0,16"
+                Visibility="{Binding OverdueInstallmentsCount, Converter={StaticResource CountToVis}}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="&#xE7BA;" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                           Foreground="{DynamicResource App.DangerBrush}" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                <TextBlock VerticalAlignment="Center" FontSize="13" Foreground="{DynamicResource App.TextPrimaryBrush}">
+                    <Run Text="{Binding OverdueInstallmentsCount, Mode=OneWay}"/>
+                    <Run Text="overdue installments totaling"/>
+                    <Run Text="{Binding TotalOverdueAmount, StringFormat=N0, Mode=OneWay}"/>
+                    <Run Text="EGP"/>
+                </TextBlock>
+                <Button Content="View Obligations" Command="{Binding NavigateToObligationsCommand}"
+                        Margin="16,0,0,0" Padding="12,5" FontSize="12"
+                        Background="{DynamicResource App.DangerBrush}" Foreground="White"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Row 3 - Obligations List (preserved) -->
+        <Border Grid.Row="5" Background="{DynamicResource App.SurfaceBrush}" CornerRadius="12" Padding="20" Margin="0,0,0,16">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,12">
+                    <TextBlock Text="Obligations" 
+                               FontSize="15" 
+                               FontWeight="SemiBold" 
+                               Foreground="{DynamicResource App.TextPrimaryBrush}"/>
+                    <TextBlock Text="{Binding Obligations.Count, StringFormat=' ({0})'}" 
+                               FontSize="15" 
+                               Foreground="{DynamicResource App.TextMutedBrush}"/>
+                </StackPanel>
+
+                <Grid>
+                    <!-- Empty State -->
+                    <controls:EmptyStateControl 
+                        IconText="&#xE8A5;"
+                        Title="No obligations yet"
+                        Message="Create your first obligation to start tracking schedules, payments, and projections."
+                        ActionText="Create Obligation"
+                        ActionCommand="{Binding CreateObligationCommand}"
+                        IsActionVisible="True"
+                        Visibility="{Binding HasNoObligations, Converter={StaticResource BoolToVisibility}}"/>
+
+                    <!-- Data Grid -->
+                    <DataGrid ItemsSource="{Binding Obligations}"
+                              SelectedItem="{Binding SelectedObligation}"
+                              AutoGenerateColumns="False"
+                              IsReadOnly="True"
+                              CanUserAddRows="False"
+                              CanUserDeleteRows="False"
+                              HeadersVisibility="Column"
+                              GridLinesVisibility="None"
+                              Background="Transparent"
+                              BorderThickness="0"
+                              RowBackground="{DynamicResource App.GridRowBrush}"
+                              AlternatingRowBackground="{DynamicResource App.GridAltRowBrush}"
+                              Foreground="{DynamicResource App.TextPrimaryBrush}"
+                              SelectionMode="Single"
+                              Visibility="{Binding HasObligations, Converter={StaticResource BoolToVisibility}}">
+                        <DataGrid.InputBindings>
+                            <MouseBinding MouseAction="LeftDoubleClick" 
+                                          Command="{Binding OpenObligationCommand}"
+                                          CommandParameter="{Binding SelectedObligation}"/>
+                        </DataGrid.InputBindings>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
+                            <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="85"/>
+                            <DataGridTextColumn Header="Principal" Binding="{Binding Principal, StringFormat=N0}" Width="95"/>
+                            <DataGridTextColumn Header="Paid" Binding="{Binding Paid, StringFormat=N0}" Width="85"/>
+                            <DataGridTextColumn Header="Outstanding" Binding="{Binding Outstanding, StringFormat=N0}" Width="95"/>
+                            <DataGridTextColumn Header="Overdue" Binding="{Binding OverdueInstallments}" Width="60"/>
+                            <DataGridTextColumn Header="Next Due" Binding="{Binding NextDueDateDisplay}" Width="90"/>
+                            <DataGridTextColumn Header="Health" Binding="{Binding HealthStatus}" Width="70"/>
+                            <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="65"/>
+                            <DataGridTemplateColumn Header="" Width="60">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Content="&#xE76C;" 
+                                                FontFamily="Segoe MDL2 Assets"
+                                                Command="{Binding DataContext.OpenObligationCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                CommandParameter="{Binding}"
+                                                Background="Transparent"
+                                                Foreground="{DynamicResource App.AccentBrush}"
+                                                BorderThickness="0"
+                                                FontSize="16"
+                                                Cursor="Hand"
+                                                ToolTip="View Details"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </DockPanel>
+        </Border>
+
+        <!-- Row 4 - Quick Navigation Cards -->
+        <UniformGrid Grid.Row="6" Rows="1" Columns="4" Margin="0,0,0,16">
+            <Button Command="{Binding NavigateToForecastCommand}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Padding="0" Margin="0,0,6,0" Cursor="Hand"
+                    AutomationProperties.Name="Navigate to Forecast">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{DynamicResource App.SurfaceBrush}" CornerRadius="12" Padding="16,14" SnapsToDevicePixels="True">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                    <TextBlock Text="&#xE9D9;" FontFamily="Segoe MDL2 Assets" FontSize="16"
+                                               Foreground="{DynamicResource App.AccentBrush}" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Forecast" FontSize="14" FontWeight="SemiBold"
+                                               Foreground="{DynamicResource App.TextPrimaryBrush}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <TextBlock Text="Cash flow projections"
+                                           FontSize="12" Foreground="{DynamicResource App.TextMutedBrush}"/>
+                            </StackPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Opacity" Value="0.85"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+            <Button Command="{Binding NavigateToAiAdvisorCommand}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Padding="0" Margin="6,0,6,0" Cursor="Hand"
+                    AutomationProperties.Name="Navigate to AI Advisor">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{DynamicResource App.SurfaceBrush}" CornerRadius="12" Padding="16,14" SnapsToDevicePixels="True">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                    <TextBlock Text="&#xE99A;" FontFamily="Segoe MDL2 Assets" FontSize="16"
+                                               Foreground="{DynamicResource App.WarningBrush}" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="AI Advisor" FontSize="14" FontWeight="SemiBold"
+                                               Foreground="{DynamicResource App.TextPrimaryBrush}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <TextBlock FontSize="12" Foreground="{DynamicResource App.TextMutedBrush}">
+                                    <Run Text="{Binding WidgetAiInsightCount, Mode=OneWay}"/>
+                                    <Run Text="insights"/>
+                                </TextBlock>
+                            </StackPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Opacity" Value="0.85"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+            <Button Command="{Binding NavigateToReportsCommand}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Padding="0" Margin="6,0,6,0" Cursor="Hand"
+                    AutomationProperties.Name="Navigate to Reports">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{DynamicResource App.SurfaceBrush}" CornerRadius="12" Padding="16,14" SnapsToDevicePixels="True">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                    <TextBlock Text="&#xE9F9;" FontFamily="Segoe MDL2 Assets" FontSize="16"
+                                               Foreground="{DynamicResource App.SuccessBrush}" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Reports" FontSize="14" FontWeight="SemiBold"
+                                               Foreground="{DynamicResource App.TextPrimaryBrush}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <TextBlock Text="Financial reports and analysis"
+                                           FontSize="12" Foreground="{DynamicResource App.TextMutedBrush}"/>
+                            </StackPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Opacity" Value="0.85"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+            <Button Command="{Binding NavigateToDataQualityCommand}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Padding="0" Margin="6,0,0,0" Cursor="Hand"
+                    AutomationProperties.Name="Navigate to Data Health">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{DynamicResource App.SurfaceBrush}" CornerRadius="12" Padding="16,14" SnapsToDevicePixels="True">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                    <TextBlock Text="&#xE9D5;" FontFamily="Segoe MDL2 Assets" FontSize="16"
+                                               Foreground="{DynamicResource App.DangerBrush}" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Data Health" FontSize="14" FontWeight="SemiBold"
+                                               Foreground="{DynamicResource App.TextPrimaryBrush}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <TextBlock FontSize="12" Foreground="{DynamicResource App.TextMutedBrush}">
+                                    <Run Text="{Binding WidgetDataQualityIssueCount, Mode=OneWay}"/>
+                                    <Run Text="issues"/>
+                                </TextBlock>
+                            </StackPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Opacity" Value="0.85"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+        </UniformGrid>
+
+        <!-- Loading Overlay -->
+        <Border Grid.RowSpan="8" 
+                Background="{DynamicResource App.OverlayBrush}" 
+                Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibility}}"
+                CornerRadius="12">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <ProgressBar IsIndeterminate="True" Width="200" Height="4"/>
+                <TextBlock Text="Loading..." 
+                           Foreground="{DynamicResource App.TextPrimaryBrush}"
+                           FontSize="14"
+                           Margin="0,12,0,0"
+                           HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

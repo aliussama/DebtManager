@@ -1,0 +1,168 @@
+<UserControl x:Class="DebtManager.Desktop.Views.BudgetsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:DebtManager.Desktop.Controls"
+             Background="{DynamicResource App.BackgroundBrush}">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+    </UserControl.Resources>
+
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <DockPanel Grid.Row="0" Margin="0,0,0,16">
+            <StackPanel DockPanel.Dock="Left">
+                <TextBlock Text="Budgets" FontSize="28" FontWeight="Bold" Foreground="{DynamicResource App.TextPrimaryBrush}"/>
+                <TextBlock Text="Track spending against monthly budgets" FontSize="14" Foreground="{DynamicResource App.TextSecondaryBrush}" Margin="0,4,0,0"/>
+            </StackPanel>
+            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
+                <Button Command="{Binding RefreshCommand}" Padding="12,8" Margin="0,0,8,0">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE72C;" FontFamily="Segoe MDL2 Assets" FontSize="12" Margin="0,0,6,0" VerticalAlignment="Center" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                        <TextBlock Text="Refresh" FontSize="12"/>
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding ExportCsvCommand}" Padding="12,8" Margin="0,0,8,0">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xEDE1;" FontFamily="Segoe MDL2 Assets" FontSize="12" Margin="0,0,6,0" VerticalAlignment="Center" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                        <TextBlock Text="Export" FontSize="12"/>
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding ShowDefineCommand}" Background="{DynamicResource App.AccentBrush}" Foreground="White" Padding="14,8">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE710;" FontFamily="Segoe MDL2 Assets" FontSize="12" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="New Budget" FontSize="12"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </DockPanel>
+
+        <!-- Period selector + summary -->
+        <Grid Grid.Row="1" Margin="0,0,0,12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="12"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="12"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="12"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Background="{DynamicResource App.SurfaceBrush}" CornerRadius="10" Padding="12">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Period:" FontSize="12" VerticalAlignment="Center" Foreground="{DynamicResource App.TextSecondaryBrush}" Margin="0,0,8,0"/>
+                    <ComboBox ItemsSource="{Binding YearOptions}" SelectedItem="{Binding SelectedYear}" Width="80" Padding="6,4" FontSize="12" Margin="0,0,6,0"/>
+                    <ComboBox ItemsSource="{Binding MonthOptions}" SelectedItem="{Binding SelectedMonth}" Width="60" Padding="6,4" FontSize="12"/>
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Column="2" Background="{DynamicResource App.SurfaceBrush}" CornerRadius="10" Padding="16">
+                <StackPanel>
+                    <TextBlock Text="TOTAL LIMIT" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource App.TextMutedBrush}"/>
+                    <TextBlock Text="{Binding TotalLimit, StringFormat=N2}" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource App.AccentBrush}" Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Column="4" Background="{DynamicResource App.SurfaceBrush}" CornerRadius="10" Padding="16">
+                <StackPanel>
+                    <TextBlock Text="TOTAL SPENT" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource App.TextMutedBrush}"/>
+                    <TextBlock Text="{Binding TotalActual, StringFormat=N2}" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource App.DangerBrush}" Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Column="6" Background="{DynamicResource App.SurfaceBrush}" CornerRadius="10" Padding="16">
+                <StackPanel>
+                    <TextBlock Text="REMAINING" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource App.TextMutedBrush}"/>
+                    <TextBlock Text="{Binding TotalRemaining, StringFormat=N2}" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource App.SuccessBrush}" Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- Define form -->
+        <Border Grid.Row="2" Background="{DynamicResource App.SurfaceBrush}" CornerRadius="12" Padding="20" Margin="0,0,0,12"
+                Visibility="{Binding IsDefineVisible, Converter={StaticResource BoolToVis}}">
+            <StackPanel>
+                <TextBlock Text="Define Budget" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource App.TextPrimaryBrush}" Margin="0,0,0,12"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="SCOPE" FontSize="11" Foreground="{DynamicResource App.TextSecondaryBrush}" Margin="0,0,0,4"/>
+                        <ComboBox ItemsSource="{Binding ScopeTypes}" SelectedItem="{Binding NewScopeType}" Padding="10,8" FontSize="13"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="CATEGORY" FontSize="11" Foreground="{DynamicResource App.TextSecondaryBrush}" Margin="0,0,0,4"/>
+                        <ComboBox ItemsSource="{Binding AvailableCategories}" SelectedItem="{Binding NewCategory}" DisplayMemberPath="Name" Padding="10,8" FontSize="13"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="4">
+                        <TextBlock Text="LIMIT" FontSize="11" Foreground="{DynamicResource App.TextSecondaryBrush}" Margin="0,0,0,4"/>
+                        <TextBox Text="{Binding NewLimit, UpdateSourceTrigger=PropertyChanged}" Width="120" Padding="10,8" FontSize="13"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="6">
+                        <TextBlock Text="CARRY" FontSize="11" Foreground="{DynamicResource App.TextSecondaryBrush}" Margin="0,0,0,4"/>
+                        <ComboBox ItemsSource="{Binding CarryPolicies}" SelectedItem="{Binding NewCarryPolicy}" Width="130" Padding="10,8" FontSize="13"/>
+                    </StackPanel>
+                </Grid>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+                    <Button Content="Cancel" Command="{Binding CancelDefineCommand}" Padding="16,8" Margin="0,0,8,0"/>
+                    <Button Content="Define" Command="{Binding ConfirmDefineCommand}" Background="{DynamicResource App.AccentBrush}" Foreground="White" Padding="16,8"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Utilization DataGrid -->
+        <DataGrid Grid.Row="3" ItemsSource="{Binding Utilizations}" AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  Background="{DynamicResource App.SurfaceBrush}" Foreground="{DynamicResource App.TextPrimaryBrush}"
+                  BorderBrush="{DynamicResource App.BorderBrush}" GridLinesVisibility="Horizontal"
+                  HorizontalGridLinesBrush="{DynamicResource App.BorderBrush}" HeadersVisibility="Column"
+                  SelectionMode="Single" FontSize="13">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Scope" Binding="{Binding ScopeLabel}" Width="180"/>
+                <DataGridTextColumn Header="Limit" Binding="{Binding LimitAmount, StringFormat=N2}" Width="110">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock"><Setter Property="HorizontalAlignment" Value="Right"/></Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="Actual" Binding="{Binding ActualAmount, StringFormat=N2}" Width="110">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock"><Setter Property="HorizontalAlignment" Value="Right"/></Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="Remaining" Binding="{Binding RemainingAmount, StringFormat=N2}" Width="110">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock"><Setter Property="HorizontalAlignment" Value="Right"/></Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="% Used" Binding="{Binding PercentUsed, StringFormat=N1}" Width="80"/>
+                <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="90"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- Empty State -->
+        <controls:EmptyStateControl Grid.Row="3"
+                                    Visibility="{Binding IsEmpty, Converter={StaticResource BoolToVis}}"
+                                    Title="No Budgets Defined"
+                                    Message="Define a budget to track spending for this period."
+                                    IconText="&#xE8C7;"
+                                    ActionText="Define Budget"
+                                    ActionCommand="{Binding ShowDefineCommand}"/>
+
+        <ProgressBar Grid.Row="3" IsIndeterminate="True" Height="3" VerticalAlignment="Top"
+                     Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}"/>
+    </Grid>
+</UserControl>

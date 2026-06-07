@@ -1,0 +1,236 @@
+<UserControl x:Class="DebtManager.Desktop.Views.InitialSetupView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="600" d:DesignWidth="560"
+             Background="{DynamicResource App.BackgroundBrush}">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+    </UserControl.Resources>
+
+    <Grid>
+        <Border Background="{DynamicResource App.SurfaceBrush}"
+                CornerRadius="16"
+                MaxWidth="520"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Padding="40"
+                Margin="40">
+            <StackPanel>
+                <!-- Step Title -->
+                <TextBlock Text="{Binding StepTitle}"
+                           FontSize="22" FontWeight="Bold"
+                           Foreground="{DynamicResource App.TextPrimaryBrush}"
+                           Margin="0,0,0,8"/>
+                <TextBlock Text="{Binding StepDescription}"
+                           FontSize="13"
+                           Foreground="{DynamicResource App.TextSecondaryBrush}"
+                           TextWrapping="Wrap"
+                           Margin="0,0,0,24"/>
+
+                <!-- Step 1: Base Config -->
+                <StackPanel>
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding CurrentStepIndex}" Value="0">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+
+                    <StackPanel Margin="0,0,0,16">
+                        <TextBlock Text="REPORTING CURRENCY" FontSize="11" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource App.TextSecondaryBrush}" Margin="0,0,0,6"/>
+                        <ComboBox ItemsSource="{Binding AvailableCurrencies}"
+                                  Text="{Binding ReportingCurrency, UpdateSourceTrigger=PropertyChanged}"
+                                  IsEditable="True"
+                                  FontSize="14" Padding="12,10"/>
+                    </StackPanel>
+
+                    <StackPanel Margin="0,0,0,16">
+                        <TextBlock Text="FISCAL YEAR START MONTH" FontSize="11" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource App.TextSecondaryBrush}" Margin="0,0,0,6"/>
+                        <TextBox Text="{Binding FiscalYearStartMonth, UpdateSourceTrigger=PropertyChanged}"
+                                 FontSize="14" Padding="12,10"/>
+                        <TextBlock Text="1 = January, 4 = April (UK), 7 = July (AU), etc."
+                                   FontSize="11" Foreground="{DynamicResource App.TextMutedBrush}" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Step 2: Defaults + Demo -->
+                <StackPanel>
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding CurrentStepIndex}" Value="1">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                        <CheckBox IsChecked="{Binding CreateDefaultAccounts}" VerticalAlignment="Center"/>
+                        <StackPanel Margin="12,0,0,0">
+                            <TextBlock Text="Create default accounts" FontSize="14"
+                                       Foreground="{DynamicResource App.TextPrimaryBrush}"/>
+                            <TextBlock Text="Cash, Bank, and Savings accounts in your chosen currency"
+                                       FontSize="11" Foreground="{DynamicResource App.TextMutedBrush}"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                        <CheckBox IsChecked="{Binding CreateDefaultCategories}" VerticalAlignment="Center"/>
+                        <StackPanel Margin="12,0,0,0">
+                            <TextBlock Text="Create default categories" FontSize="14"
+                                       Foreground="{DynamicResource App.TextPrimaryBrush}"/>
+                            <TextBlock Text="Standard income and expense categories"
+                                       FontSize="11" Foreground="{DynamicResource App.TextMutedBrush}"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                        <CheckBox IsChecked="{Binding SeedDemoData}" VerticalAlignment="Center"/>
+                        <StackPanel Margin="12,0,0,0">
+                            <TextBlock Text="Seed demo data" FontSize="14"
+                                       Foreground="{DynamicResource App.TextPrimaryBrush}"/>
+                            <TextBlock Text="Populate the app with realistic sample data (can be cleared later)"
+                                       FontSize="11" Foreground="{DynamicResource App.TextMutedBrush}" TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Step 3: Confirmation -->
+                <StackPanel>
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding CurrentStepIndex}" Value="2">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+
+                    <Border Background="{DynamicResource App.InputBackgroundBrush}" CornerRadius="8" Padding="16" Margin="0,0,0,16">
+                        <StackPanel>
+                            <Grid Margin="0,0,0,8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="160"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Currency:" FontSize="13" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                                <TextBlock Grid.Column="1" Text="{Binding SummaryCurrency}" FontSize="13" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource App.TextPrimaryBrush}"/>
+                            </Grid>
+                            <Grid Margin="0,0,0,8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="160"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Fiscal year start:" FontSize="13" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                                <TextBlock Grid.Column="1" Text="{Binding SummaryFiscalMonth}" FontSize="13" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource App.TextPrimaryBrush}"/>
+                            </Grid>
+                            <Grid Margin="0,0,0,8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="160"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Default accounts:" FontSize="13" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                                <TextBlock Grid.Column="1" Text="{Binding SummaryAccounts}" FontSize="13" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource App.TextPrimaryBrush}"/>
+                            </Grid>
+                            <Grid Margin="0,0,0,8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="160"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Default categories:" FontSize="13" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                                <TextBlock Grid.Column="1" Text="{Binding SummaryCategories}" FontSize="13" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource App.TextPrimaryBrush}"/>
+                            </Grid>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="160"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Demo data:" FontSize="13" Foreground="{DynamicResource App.TextSecondaryBrush}"/>
+                                <TextBlock Grid.Column="1" Text="{Binding SummaryDemo}" FontSize="13" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource App.TextPrimaryBrush}"/>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
+                <!-- Status -->
+                <TextBlock Text="{Binding StatusText}" FontSize="12"
+                           Foreground="{DynamicResource App.DangerBrush}"
+                           TextWrapping="Wrap" Margin="0,8,0,0"
+                           Visibility="{Binding StatusText, Converter={StaticResource StringNotEmptyToVisibility}}"/>
+
+                <ProgressBar IsIndeterminate="True" Height="2" Margin="0,12,0,0"
+                             Visibility="{Binding IsBusy, Converter={StaticResource BoolToVis}}"/>
+
+                <!-- Navigation -->
+                <Grid Margin="0,24,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button Grid.Column="0" Content="Back"
+                            Command="{Binding BackCommand}"
+                            Padding="16,10"
+                            Visibility="{Binding CanBack, Converter={StaticResource BoolToVis}}"/>
+
+                    <!-- Next -->
+                    <Button Grid.Column="2" Content="Next"
+                            Command="{Binding NextCommand}"
+                            Padding="20,10"
+                            Background="{DynamicResource App.AccentBrush}"
+                            Foreground="White" FontWeight="SemiBold">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                <Setter Property="Visibility" Value="Visible"/>
+                                <Setter Property="Background" Value="{DynamicResource App.AccentBrush}"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsLastStep}" Value="True">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
+                    <!-- Finish -->
+                    <Button Grid.Column="2" Content="Finish Setup"
+                            Command="{Binding FinishCommand}"
+                            Padding="20,10" FontWeight="SemiBold">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Background" Value="{DynamicResource App.SuccessBrush}"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsLastStep}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </Grid>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

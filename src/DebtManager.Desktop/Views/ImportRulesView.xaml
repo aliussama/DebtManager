@@ -1,0 +1,198 @@
+<UserControl x:Class="DebtManager.Desktop.Views.ImportRulesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="600" d:DesignWidth="900"
+             Background="{DynamicResource App.BackgroundBrush}">
+    <Grid Margin="32,24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+            <TextBlock Text="&#xE71C;" FontFamily="Segoe MDL2 Assets" FontSize="22"
+                       Foreground="{DynamicResource App.AccentBrush}"
+                       VerticalAlignment="Center" Margin="0,0,12,0"/>
+            <TextBlock Text="Import Rules" FontSize="22" FontWeight="Bold"
+                       Foreground="{DynamicResource App.TextPrimaryBrush}"
+                       VerticalAlignment="Center"/>
+            <Button Content="Refresh" Command="{Binding RefreshCommand}"
+                    Margin="16,0,0,0"
+                    VerticalAlignment="Center" Padding="10,5"/>
+            <Button Content="+ New Pack" Command="{Binding ShowCreatePackCommand}"
+                    Style="{StaticResource PrimaryButton}" Margin="8,0,0,0"
+                    VerticalAlignment="Center" Padding="10,5"/>
+        </StackPanel>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="320"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Packs list -->
+            <Border Background="{DynamicResource App.SurfaceBrush}" CornerRadius="12" Padding="12" Margin="0,0,12,0">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="Rule Packs" FontSize="14" FontWeight="SemiBold"
+                               Foreground="{DynamicResource App.TextPrimaryBrush}" Margin="0,0,0,8"/>
+
+                    <!-- Create Pack form -->
+                    <Border DockPanel.Dock="Top"
+                            Visibility="{Binding IsCreatePackVisible, Converter={StaticResource BoolToVisibility}}"
+                            Background="{DynamicResource App.BackgroundBrush}" CornerRadius="8" Padding="10" Margin="0,0,0,8">
+                        <StackPanel>
+                            <TextBlock Text="Name" FontSize="11" Foreground="{DynamicResource App.TextSecondaryBrush}" Margin="0,0,0,2"/>
+                            <TextBox Text="{Binding NewPackName, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,6"/>
+                            <TextBlock Text="Description" FontSize="11" Foreground="{DynamicResource App.TextSecondaryBrush}" Margin="0,0,0,2"/>
+                            <TextBox Text="{Binding NewPackDescription, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,6"/>
+                            <CheckBox Content="Enabled" IsChecked="{Binding NewPackEnabled}" Margin="0,0,0,6"/>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Content="Create" Command="{Binding ConfirmCreatePackCommand}"
+                                        Style="{StaticResource PrimaryButton}" Padding="10,4" Margin="0,0,6,0"/>
+                                <Button Content="Cancel" Command="{Binding CancelCreatePackCommand}"
+                                        Padding="10,4"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Empty state -->
+                    <TextBlock Text="No rule packs defined yet."
+                               Visibility="{Binding IsPacksEmpty, Converter={StaticResource BoolToVisibility}}"
+                               Foreground="{DynamicResource App.TextMutedBrush}" FontSize="12" Margin="0,12"/>
+
+                    <ItemsControl ItemsSource="{Binding Packs}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="{DynamicResource App.BackgroundBrush}" CornerRadius="8" Padding="10" Margin="0,0,0,4" Cursor="Hand">
+                                    <Border.InputBindings>
+                                        <MouseBinding Gesture="LeftClick"
+                                                      Command="{Binding DataContext.SelectPackCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                      CommandParameter="{Binding}"/>
+                                    </Border.InputBindings>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="13"
+                                                       Foreground="{DynamicResource App.TextPrimaryBrush}"/>
+                                            <TextBlock Text="{Binding Description}" FontSize="11"
+                                                       Foreground="{DynamicResource App.TextSecondaryBrush}" TextTrimming="CharacterEllipsis"/>
+                                        </StackPanel>
+                                        <Button Grid.Column="1" Content="&#xE74D;" FontFamily="Segoe MDL2 Assets"
+                                                ToolTip="Archive" Padding="4" FontSize="12"
+                                                Command="{Binding DataContext.ArchivePackCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                CommandParameter="{Binding}"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </DockPanel>
+            </Border>
+
+            <!-- Rules detail for selected pack -->
+            <Border Grid.Column="1" Background="{DynamicResource App.SurfaceBrush}" CornerRadius="12" Padding="12">
+                <DockPanel>
+                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,8">
+                        <TextBlock Text="Rules" FontSize="14" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource App.TextPrimaryBrush}" VerticalAlignment="Center"/>
+                        <Button Content="+ Add Rule" Command="{Binding ShowAddRuleCommand}"
+                                Style="{StaticResource PrimaryButton}" Padding="8,4" Margin="12,0,0,0"
+                                Visibility="{Binding IsPackSelected, Converter={StaticResource BoolToVisibility}}"/>
+                    </StackPanel>
+
+                    <!-- Add Rule form -->
+                    <Border DockPanel.Dock="Top"
+                            Visibility="{Binding IsAddRuleVisible, Converter={StaticResource BoolToVisibility}}"
+                            Background="{DynamicResource App.BackgroundBrush}" CornerRadius="8" Padding="10" Margin="0,0,0,8">
+                        <StackPanel>
+                            <TextBlock Text="Kind" FontSize="11" Foreground="{DynamicResource App.TextSecondaryBrush}" Margin="0,0,0,2"/>
+                            <ComboBox SelectedItem="{Binding NewRuleKind}" Margin="0,0,0,6">
+                                <ComboBoxItem Content="Categorize"/>
+                                <ComboBoxItem Content="MatchBill"/>
+                                <ComboBoxItem Content="MatchInvoice"/>
+                                <ComboBoxItem Content="MatchTransfer"/>
+                                <ComboBoxItem Content="Ignore"/>
+                                <ComboBoxItem Content="RouteAccount"/>
+                            </ComboBox>
+                            <TextBlock Text="Priority" FontSize="11" Foreground="{DynamicResource App.TextSecondaryBrush}" Margin="0,0,0,2"/>
+                            <TextBox Text="{Binding NewRulePriority, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,6"/>
+                            <TextBlock Text="Match Spec (JSON)" FontSize="11" Foreground="{DynamicResource App.TextSecondaryBrush}" Margin="0,0,0,2"/>
+                            <TextBox Text="{Binding NewRuleMatchSpecJson, UpdateSourceTrigger=PropertyChanged}"
+                                     AcceptsReturn="True" TextWrapping="Wrap" MinHeight="60" Margin="0,0,0,6"
+                                     FontFamily="Consolas" FontSize="11"/>
+                            <TextBlock Text="Action Spec (JSON)" FontSize="11" Foreground="{DynamicResource App.TextSecondaryBrush}" Margin="0,0,0,2"/>
+                            <TextBox Text="{Binding NewRuleActionSpecJson, UpdateSourceTrigger=PropertyChanged}"
+                                     AcceptsReturn="True" TextWrapping="Wrap" MinHeight="60" Margin="0,0,0,6"
+                                     FontFamily="Consolas" FontSize="11"/>
+                            <CheckBox Content="Enabled" IsChecked="{Binding NewRuleEnabled}" Margin="0,0,0,6"/>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Content="Add" Command="{Binding ConfirmAddRuleCommand}"
+                                        Style="{StaticResource PrimaryButton}" Padding="10,4" Margin="0,0,6,0"/>
+                                <Button Content="Cancel" Command="{Binding CancelAddRuleCommand}"
+                                        Padding="10,4"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <TextBlock Text="Select a pack to view rules."
+                               Foreground="{DynamicResource App.TextMutedBrush}" FontSize="12"
+                               Margin="0,20" HorizontalAlignment="Center">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Visible"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsPackSelected}" Value="True">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+
+                    <DataGrid ItemsSource="{Binding SelectedPackRules}"
+                              AutoGenerateColumns="False"
+                              IsReadOnly="True"
+                              HeadersVisibility="Column"
+                              GridLinesVisibility="Horizontal"
+                              Visibility="{Binding IsPackSelected, Converter={StaticResource BoolToVisibility}}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Kind" Binding="{Binding Kind}" Width="100"/>
+                            <DataGridTextColumn Header="Priority" Binding="{Binding Priority}" Width="60"/>
+                            <DataGridTextColumn Header="Version" Binding="{Binding Version}" Width="60"/>
+                            <DataGridCheckBoxColumn Header="Enabled" Binding="{Binding IsEnabled}" Width="60"/>
+                            <DataGridCheckBoxColumn Header="Archived" Binding="{Binding IsArchived}" Width="65"/>
+                            <DataGridTextColumn Header="Match" Binding="{Binding MatchSpecJson}" Width="*"/>
+                            <DataGridTemplateColumn Header="" Width="40">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Content="&#xE74D;" FontFamily="Segoe MDL2 Assets"
+                                                ToolTip="Archive Rule" Padding="2" FontSize="11"
+                                                Command="{Binding DataContext.ArchiveRuleCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                CommandParameter="{Binding}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </DockPanel>
+            </Border>
+        </Grid>
+
+        <!-- Loading -->
+        <Border Grid.RowSpan="2"
+                Background="{DynamicResource App.HeavyOverlayBrush}"
+                Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibility}}">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <ProgressBar IsIndeterminate="True" Width="180" Height="3"/>
+                <TextBlock Text="Loading..." Foreground="{DynamicResource App.TextPrimaryBrush}" FontSize="13" Margin="0,10,0,0" HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>
